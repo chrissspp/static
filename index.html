@@ -64,7 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     
     <script>
-        // --- 1. CONFIGURATION ---
+        // 1. CONFIG
         window.__scramjet$config = {
             prefix: '/service/',
             codec: 'xor',
@@ -75,42 +75,50 @@
             }
         };
 
-        // --- 2. SERVICE WORKER REGISTRATION ---
+        // 2. SW REGISTRATION
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
                 .then(() => console.log("Static Engine: Online"))
                 .catch(err => console.error("SW Registration Failed:", err));
         }
 
-        // --- 3. TYPEWRITER EFFECT (FIXED) ---
+        // 3. TYPEWRITER (Fixed appendChild error)
         window.addEventListener('load', () => {
             const typewriter = document.getElementById('typewriter');
             const phrase = "welcome to static.";
             let charIdx = 0;
 
-            function type() {
-                if (charIdx < phrase.length) {
-                    const span = document.createElement('span');
-                    if (charIdx >= 11) span.className = 'rainbow';
-                    span.textContent = phrase[charIdx];
-                    typewriter.appendChild(span);
-                    charIdx++;
-                    setTimeout(type, 100);
+            if (typewriter) {
+                function type() {
+                    if (charIdx < phrase.length) {
+                        const span = document.createElement('span');
+                        if (charIdx >= 11) span.className = 'rainbow';
+                        span.textContent = phrase[charIdx];
+                        typewriter.appendChild(span);
+                        charIdx++;
+                        setTimeout(type, 100);
+                    }
                 }
+                type();
             }
-            type();
         });
 
-        // --- 4. FORM LOGIC ---
+        // 4. SEARCH LOGIC (Fixed 404/Search issue)
         document.getElementById('proxy-form').onsubmit = (e) => {
             e.preventDefault();
             const val = document.getElementById('url-input').value.trim();
             if (!val) return;
 
-            let target = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : 'https://www.google.com/search?q=' + encodeURIComponent(val);
-            
+            let target = val;
+            if (!val.includes('.')) {
+                target = 'https://www.google.com/search?q=' + encodeURIComponent(val);
+            } else if (!val.startsWith('http')) {
+                target = 'https://' + val;
+            }
+
             document.getElementById('game-overlay').style.display = 'block';
-            document.getElementById('game-frame').src = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
+            const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
+            document.getElementById('game-frame').src = encoded;
         };
 
         function closeGame() {

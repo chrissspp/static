@@ -38,10 +38,10 @@
 
         #typewriter span.space { width: 1.5rem; }
 
-        /* --- THE REVERSED RAINBOW --- */
+        /* --- THE REVERSED RAINBOW (NO FREEZE) --- */
         #typewriter span.rainbow {
             background-image: linear-gradient(
-                -90deg, /* Flipped the direction */
+                -90deg, 
                 #ff0000, #ffcc00, #00ff00, 
                 #00ffff, #0000ff, #ff00ff, #ff0000
             );
@@ -49,13 +49,8 @@
             background-clip: text;
             color: transparent;
             background-size: 200% 100%;
-            /* Animation starts normal */
+            /* Constant shift animation */
             animation: charFloat 1.2s ease-in-out infinite, rainbowShift 0.5s linear infinite;
-        }
-
-        /* --- THE FREEZE CLASS --- */
-        #typewriter span.rainbow.frozen {
-            animation-play-state: running, paused; /* Floats, but rainbow stops */
         }
 
         @keyframes charFloat {
@@ -64,8 +59,8 @@
         }
 
         @keyframes rainbowShift {
-            0% { background-position: 100% 50%; } /* Flipped start pos */
-            100% { background-position: 0% 50%; } /* Flipped end pos */
+            0% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .cursor {
@@ -150,9 +145,6 @@
                     typeSpeed = 40;
                 }
             } else {
-                // UNFREEZE when deleting starts
-                document.querySelectorAll('.rainbow').forEach(s => s.classList.remove('frozen'));
-                
                 if (charIndex > 0) {
                     typewriterElement.removeChild(typewriterElement.lastChild);
                     charIndex--;
@@ -161,9 +153,6 @@
             }
 
             if (!isDeleting && charIndex === currentPhrase.length) {
-                // FREEZE the rainbow when the word is finished
-                document.querySelectorAll('.rainbow').forEach(s => s.classList.add('frozen'));
-                
                 isDeleting = true; 
                 typeSpeed = 2000; 
             } else if (isDeleting && charIndex === 0) {

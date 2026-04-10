@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space | Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --accent: #a020f0;
@@ -13,18 +13,28 @@
         }
 
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            background: var(--bg); 
-            color: var(--text-main); 
-            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 0; background: var(--bg); 
+            color: var(--text-main); font-family: 'Outfit', sans-serif; 
             overflow: hidden; 
         }
 
         /* --- NAV --- */
-        nav { display: flex; justify-content: center; padding: 25px; gap: 60px; }
-        .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.4; transition: 0.4s; }
-        .nav-item:hover { opacity: 1; color: var(--accent); transform: translateY(-2px); }
+        nav { display: flex; justify-content: center; padding: 30px; gap: 60px; }
+        .nav-item { 
+            font-size: 1.8rem; cursor: pointer; opacity: 0.3; 
+            transition: all 0.4s ease;
+        }
+        .nav-item:hover { 
+            opacity: 1; color: var(--accent); transform: scale(1.2);
+            filter: drop-shadow(0 0 8px var(--accent));
+        }
+
+        /* --- FLOATING ANIMATION --- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
 
         /* --- HERO --- */
         .hero {
@@ -32,68 +42,64 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 80vh;
+            height: 75vh;
             text-align: center;
         }
 
         .typing-container {
             display: flex;
             align-items: center;
-            height: 5rem;
-            margin-bottom: 10px;
+            height: 6rem;
+            margin-bottom: 5px;
+            /* Applying the float */
+            animation: float 4s ease-in-out infinite;
         }
 
         #typewriter {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 4.5rem;
-            font-weight: 800;
-            letter-spacing: -2px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 5rem; font-weight: 700;
+            letter-spacing: -3px; text-transform: lowercase;
         }
 
         .cursor {
-            width: 6px;
-            height: 4.5rem;
-            background-color: var(--accent);
-            margin-left: 15px;
+            width: 8px; height: 4.5rem; background-color: var(--accent);
+            margin-left: 20px; border-radius: 2px;
             animation: blink 0.8s infinite;
+            box-shadow: 0 0 15px var(--accent);
         }
 
         @keyframes blink { 50% { opacity: 0; } }
 
         .hero p { 
-            opacity: 0.5; 
-            font-size: 1.4rem; 
-            margin-bottom: 40px; 
-            font-weight: 400;
-            letter-spacing: 1px;
+            opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; 
+            font-weight: 300; letter-spacing: 4px; text-transform: uppercase;
+            /* Slightly different float timing for a natural feel */
+            animation: float 5s ease-in-out infinite;
         }
 
         .btn-start {
-            background: var(--accent);
-            color: white;
-            padding: 20px 50px;
-            border-radius: 60px;
-            font-weight: 800;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border: none;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            background: transparent; color: white; padding: 18px 60px;
+            border-radius: 4px; font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s; text-transform: uppercase; letter-spacing: 5px;
+            animation: float 6s ease-in-out infinite;
         }
 
         .btn-start:hover { 
-            transform: scale(1.1); 
-            box-shadow: 0 0 30px rgba(160, 32, 240, 0.6); 
+            background: white; color: black;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+            transform: translateY(-8px); /* Hover overrides float slightly */
         }
 
         /* --- OVERLAY --- */
         #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         iframe { width: 100%; height: 100%; border: none; }
         .close-btn { 
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            background: #ff0055; color: white; padding: 12px 35px; border: none; 
-            border-radius: 50px; cursor: pointer; font-weight: bold; font-family: 'Inter', sans-serif;
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); 
+            background: white; color: black; padding: 10px 30px; border: none; 
+            cursor: pointer; font-weight: bold; font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 2px;
         }
     </style>
 </head>
@@ -111,64 +117,43 @@
             <span id="typewriter"></span>
             <div class="cursor"></div>
         </div>
-        <p>Start your unblocking journey today!</p>
-        <button class="btn-start" onclick="openGame()">Launch System</button>
+        <p>freedom of the web</p>
+        <button class="btn-start" onclick="openGame()">Enter Void</button>
     </div>
 
     <div id="game-overlay">
         <iframe id="game-frame" src=""></iframe>
-        <button class="close-btn" onclick="closeGame()">TERMINATE SESSION</button>
+        <button class="close-btn" onclick="closeGame()">KILL SESSION</button>
     </div>
 
     <script>
         const typewriterElement = document.getElementById('typewriter');
-        
-        // MASSIVE LIST OF PHRASES
         const phrases = [
-            "Welcome to freedom.",
-            "Everything is accessible.",
-            "Play without limits.",
-            "The ultimate station.",
-            "Encrypted connection.",
-            "Bypass the system.",
-            "Ready for launch.",
-            "Explore the void.",
-            "Your digital playground.",
-            "Zero restrictions.",
-            "Stay undercover.",
-            "Level up your browsing.",
-            "Unlock the web.",
-            "Secure. Fast. Private.",
-            "Join the movement."
+            "access granted.", "unblock the world.", "play without fear.",
+            "the web is yours.", "no restrictions.", "encryption active.",
+            "welcome to space.", "freedom is here."
         ];
 
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let typeSpeed = 100;
+        let phraseIndex = 0; let charIndex = 0;
+        let isDeleting = false; let typeSpeed = 100;
 
         function type() {
             const currentPhrase = phrases[phraseIndex];
-
             if (isDeleting) {
                 typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--;
-                typeSpeed = 40; // Fast delete
+                charIndex--; typeSpeed = 30; 
             } else {
                 typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++;
-                typeSpeed = 80; // Smooth type
+                charIndex++; typeSpeed = 70; 
             }
 
             if (!isDeleting && charIndex === currentPhrase.length) {
-                isDeleting = true;
-                typeSpeed = 2500; // Pause at end so you can read it
+                isDeleting = true; typeSpeed = 3000; 
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 400; // Pause before starting next phrase
+                typeSpeed = 500; 
             }
-
             setTimeout(type, typeSpeed);
         }
 

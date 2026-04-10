@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statics Web Site | 400 Games</title>
+    <title>Statics | Hub</title>
     <style>
         :root {
             --accent: #a020f0; 
@@ -20,32 +20,50 @@
             overflow-x: hidden;
         }
 
+        /* --- NAVIGATION --- */
         nav {
-            padding: 1.5rem;
+            padding: 1rem;
             background: #000;
             border-bottom: 3px solid var(--accent);
-            text-align: center;
-            position: sticky; top: 0; z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent); letter-spacing: 3px; }
+
+        .nav-links button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: inherit;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .nav-links button:hover, .nav-links button.active {
             color: var(--accent);
             text-shadow: 0 0 10px var(--accent);
-            letter-spacing: 5px;
         }
 
+        /* --- PAGES --- */
+        .page { display: none; padding: 40px 5%; animation: fadeIn 0.5s; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- UI ELEMENTS --- */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
+            margin-top: 30px;
         }
 
-        .game-card {
+        .card {
             background: var(--card-bg);
             border: 2px solid #222;
             padding: 30px;
@@ -54,131 +72,106 @@
             cursor: pointer;
         }
 
-        .game-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-            transform: scale(1.03);
-        }
+        .card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
 
-        .play-btn {
-            background: transparent;
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 10px 20px;
-            margin-top: 15px;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        /* The Game Theater Overlay */
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(to bottom, #000, #11001a); }
+        
+        /* Overlay for Games/Apps */
         .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column;
+            justify-content: center; align-items: center;
         }
-
-        iframe {
-            border: 3px solid var(--accent);
-            box-shadow: 0 0 30px var(--accent);
-            background: #000;
-            max-width: 95%;
-            max-height: 80%;
-        }
-
-        .close-btn {
-            margin-top: 20px;
-            color: #ff0055;
-            border: 1px solid #ff0055;
-            padding: 10px 30px;
-            background: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
+        iframe { border: 2px solid var(--accent); width: 90%; height: 80%; }
+        .close-btn { margin-top: 15px; color: #ff0055; border: 1px solid #ff0055; background: none; padding: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <nav><div class="logo">STATICS</div></nav>
-
-    <div class="grid" id="gameGrid">
+    <nav>
+        <div class="logo">STATICS</div>
+        <div class="nav-links">
+            <button onclick="showPage('home')" id="btn-home" class="active">Home</button>
+            <button onclick="showPage('games')" id="btn-games">Games</button>
+            <button onclick="showPage('apps')" id="btn-apps">Apps</button>
         </div>
+    </nav>
 
-    <div id="gameOverlay" class="overlay">
-        <div id="gameContainer" style="width: 100%; display: flex; justify-content: center;">
+    <div id="home" class="page active">
+        <div class="hero">
+            <h1>Welcome to Statics</h1>
+            <p style="color: var(--accent);">Your centralized hub for web-based entertainment.</p>
+        </div>
+        <div class="grid">
+            <div class="card" onclick="showPage('games')">
+                <h2>Browse Games</h2>
+                <p>400+ titles available</p>
             </div>
+            <div class="card" onclick="showPage('apps')">
+                <h2>Utility Apps</h2>
+                <p>Tools and productivity</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="games" class="page">
+        <h1>Games Library</h1>
+        <div class="grid" id="gameGrid">
+            <div class="card" onclick="openGame('https://html5.gamedistribution.com/f312653358ec4c959a68e43bef2b72c6/')">
+                <div style="font-size:3rem">🏎️</div>
+                <h3>Slippery Drift</h3>
+                <button style="color:var(--accent); background:none; border:1px solid var(--accent)">PLAY</button>
+             </div>
+        </div>
+    </div>
+
+    <div id="apps" class="page">
+        <h1>Utility Apps</h1>
+        <div class="grid">
+            <div class="card">
+                <div style="font-size:3rem">📟</div>
+                <h3>Calculator</h3>
+                <p>Status: Offline</p>
+            </div>
+            <div class="card">
+                <div style="font-size:3rem">✍️</div>
+                <h3>Text Editor</h3>
+                <p>Status: Encrypted</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay" class="overlay">
+        <div id="container" style="width:100%; display:flex; justify-content:center;"></div>
         <button class="close-btn" onclick="closeGame()">TERMINATE SESSION</button>
     </div>
 
     <script>
-        // --- 1. YOUR GAME DATABASE ---
-        // To add more games, just add a new line here!
-        const games = [
-            {
-                name: "NEON SNAKE",
-                icon: "🐍",
-                url: "INTERNAL_SNAKE" // We'll keep your custom snake as a special case
-            },
-            {
-                name: "GDS GAME 1",
-                icon: "🎮",
-                url: "https://html5.gamedistribution.com/f312653358ec4c959a68e43bef2b72c6/"
-            }
-            // You can add 398 more here!
-        ];
-
-        const grid = document.getElementById('gameGrid');
-        const overlay = document.getElementById('gameOverlay');
-        const container = document.getElementById('gameContainer');
-
-        // --- 2. GENERATE THE CARDS ---
-        function loadGrid() {
-            grid.innerHTML = "";
-            games.forEach((game, index) => {
-                const card = document.createElement('div');
-                card.className = 'game-card';
-                card.onclick = () => openGame(game.url);
-                card.innerHTML = `
-                    <div style="font-size: 3.5rem;">${game.icon}</div>
-                    <h3>${game.name}</h3>
-                    <button class="play-btn">INITIALIZE</button>
-                `;
-                grid.appendChild(card);
-            });
-
-            // Fill up the rest of the 400 slots with "Encrypted" boxes
-            for(let i = games.length + 1; i <= 400; i++) {
-                const lock = document.createElement('div');
-                lock.className = 'game-card';
-                lock.style.opacity = "0.3";
-                lock.innerHTML = `<div>🔒</div><h3>SLOT ${i}</h3><p>ENCRYPTED</p>`;
-                grid.appendChild(lock);
-            }
+        // PAGE SWITCHER LOGIC
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Deactivate all buttons
+            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            // Active button
+            document.getElementById('btn-' + pageId).classList.add('active');
         }
 
-        // --- 3. OPEN THE GAME ---
+        // GAME OPENER LOGIC
         function openGame(url) {
+            const overlay = document.getElementById('overlay');
+            const container = document.getElementById('container');
             overlay.style.display = 'flex';
-            if(url === "INTERNAL_SNAKE") {
-                // You could link to a separate snake.html or keep the code here
-                container.innerHTML = `<h1 style="color:white">SNAKE CODE GOES HERE</h1>`;
-            } else {
-                container.innerHTML = `
-                    <iframe src="${url}" width="900" height="600" frameborder="0" scrolling="none"></iframe>
-                `;
-            }
+            container.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
         }
 
         function closeGame() {
-            overlay.style.display = 'none';
-            container.innerHTML = ''; // Stops the game music when you close it
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('container').innerHTML = '';
         }
-
-        loadGrid();
     </script>
 </body>
 </html>

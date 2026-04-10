@@ -1,17 +1,15 @@
-importScripts('./scramjet.codecs.js');
-importScripts('./scramjet.worker.js');
+importScripts('/scram/scramjet.all.js');
 
-/**
- * Scramjet Service Worker
- * This file intercepts all network requests from the iframe 
- * and rewrites them to bypass "Refused to Connect" errors.
- */
+const { ScramjetServiceWorker } = $scramjetLoadWorker();
+const scramjet = new ScramjetServiceWorker();
 
-const sw = new ScramjetServiceWorker();
-
-self.addEventListener('fetch', (event) => {
-    // Only intercept requests that are meant for the proxy
-    if (event.request.url.startsWith(self.location.origin + '/service/')) {
-        event.respondWith(sw.fetch(event));
-    }
+self.addEventListener("fetch", (event) => {
+    event.respondWith(async () => {
+        // This line is the magic that unblocks sites
+        await scramjet.loadConfig();
+        if (scramjet.route(event)) {
+            return scramjet.fetch(event);
+        }
+        return fetch(event.request);
+    });
 });

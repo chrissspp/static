@@ -8,18 +8,7 @@ const scramjet = new ScramjetServiceWorker({
 });
 
 self.addEventListener('fetch', (event) => {
-    // Only handle requests that go through our /service/ prefix
     if (event.request.url.includes('/service/')) {
-        event.respondWith(
-            (async () => {
-                try {
-                    // We let the engine handle the fetch directly
-                    return await scramjet.fetch(event);
-                } catch (err) {
-                    console.error("Proxy error:", err);
-                    return fetch(event.request);
-                }
-            })()
-        );
+        event.respondWith(scramjet.fetch(event));
     }
 });

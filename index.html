@@ -38,6 +38,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
+        // 1. Front-end configuration
         window.__scramjet$config = {
             prefix: '/service/',
             codec: 'xor',
@@ -47,10 +48,12 @@
             }
         };
 
+        // 2. Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
         }
 
+        // 3. Fixed Typewriter (Wait for element to exist)
         window.addEventListener('DOMContentLoaded', () => {
             const typewriter = document.getElementById('typewriter');
             const phrase = "welcome to static.";
@@ -70,11 +73,14 @@
             }
         });
 
+        // 4. Submit Logic
         document.getElementById('proxy-form').onsubmit = (e) => {
             e.preventDefault();
             const val = document.getElementById('url-input').value.trim();
             if (!val) return;
+            
             let target = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : 'https://www.google.com/search?q=' + encodeURIComponent(val);
+            
             document.getElementById('game-overlay').style.display = 'block';
             document.getElementById('game-frame').src = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
         };

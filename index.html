@@ -1,57 +1,122 @@
-<script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
-<script>
-    // 1. Define Config globally
-    window.__scramjet$config = {
-        prefix: '/service/',
-        codec: 'xor',
-        bare: 'https://bare.duckdns.org/',
-        encodeUrl: (str) => {
-            if (!str) return str;
-            return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-        }
-    };
-
-    // 2. Register Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js', { 
-            scope: '/service/' 
-        }).then(() => console.log("Static Engine: Online"));
-    }
-
-    // 3. Typewriter (Wait for DOM to be ready)
-    window.addEventListener('DOMContentLoaded', () => {
-        const typewriter = document.getElementById('typewriter');
-        const phrase = "welcome to static.";
-        let charIdx = 0;
-
-        function type() {
-            if (charIdx < phrase.length) {
-                const span = document.createElement('span');
-                if (charIdx >= 11) span.className = 'rainbow';
-                span.textContent = phrase[charIdx];
-                typewriter.appendChild(span);
-                charIdx++;
-                setTimeout(type, 100);
-            }
-        }
-        type();
-    });
-
-    // 4. Proxy Logic
-    document.getElementById('proxy-form').onsubmit = (e) => {
-        e.preventDefault();
-        const val = document.getElementById('url-input').value.trim();
-        if (!val) return;
-
-        // Auto-search if not a URL
-        let target = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : 'https://www.google.com/search?q=' + encodeURIComponent(val);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static | Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #a020f0; --bg: #000000; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Outfit', sans-serif; overflow: hidden; height: 100vh; }
         
-        document.getElementById('game-overlay').style.display = 'block';
-        document.getElementById('game-frame').src = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
-    };
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .typing-container { display: flex; align-items: center; height: 6rem; margin-bottom: 20px; }
+        #typewriter { font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 700; min-height: 6rem; letter-spacing: -2px; }
+        
+        .rainbow { 
+            background-image: linear-gradient(-90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent; 
+            background-size: 200% 100%; 
+            animation: rainbowShift 1s linear infinite; 
+        }
+        @keyframes rainbowShift { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    function closeGame() {
-        document.getElementById('game-overlay').style.display = 'none';
-        document.getElementById('game-frame').src = '';
-    }
-</script>
+        .proxy-wrapper { position: relative; width: 550px; margin-top: 30px; }
+        .proxy-input { 
+            width: 100%; 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 18px 25px; 
+            border-radius: 15px; 
+            color: white; 
+            font-size: 1.1rem;
+            outline: none; 
+            backdrop-filter: blur(15px);
+        }
+        .btn-go { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--accent); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 800; }
+
+        #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .close-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 25px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <div class="typing-container">
+            <span id="typewriter"></span>
+        </div>
+        <div class="proxy-wrapper">
+            <form id="proxy-form">
+                <input type="text" class="proxy-input" id="url-input" placeholder="Search the web freely..." autocomplete="off">
+                <button type="submit" class="btn-go">GO</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="game-overlay">
+        <iframe id="game-frame" src=""></iframe>
+        <button class="close-btn" onclick="closeGame()">EXIT SESSION</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
+    
+    <script>
+        // --- 1. CONFIGURATION ---
+        window.__scramjet$config = {
+            prefix: '/service/',
+            codec: 'xor',
+            bare: 'https://bare.duckdns.org/',
+            encodeUrl: (str) => {
+                if (!str) return str;
+                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            }
+        };
+
+        // --- 2. SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
+                .then(() => console.log("Static Engine: Online"))
+                .catch(err => console.error("SW Registration Failed:", err));
+        }
+
+        // --- 3. TYPEWRITER EFFECT (FIXED) ---
+        window.addEventListener('load', () => {
+            const typewriter = document.getElementById('typewriter');
+            const phrase = "welcome to static.";
+            let charIdx = 0;
+
+            function type() {
+                if (charIdx < phrase.length) {
+                    const span = document.createElement('span');
+                    if (charIdx >= 11) span.className = 'rainbow';
+                    span.textContent = phrase[charIdx];
+                    typewriter.appendChild(span);
+                    charIdx++;
+                    setTimeout(type, 100);
+                }
+            }
+            type();
+        });
+
+        // --- 4. FORM LOGIC ---
+        document.getElementById('proxy-form').onsubmit = (e) => {
+            e.preventDefault();
+            const val = document.getElementById('url-input').value.trim();
+            if (!val) return;
+
+            let target = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : 'https://www.google.com/search?q=' + encodeURIComponent(val);
+            
+            document.getElementById('game-overlay').style.display = 'block';
+            document.getElementById('game-frame').src = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
+        };
+
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = '';
+        }
+    </script>
+</body>
+</html>

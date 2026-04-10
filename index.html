@@ -3,63 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TERMINAL</title>
+    <title>HUB</title>
     <style>
-        body { margin: 0; background: #000; color: #fff; font-family: monospace; overflow: hidden; }
-        nav { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: #000; }
-        .logo { color: #a020f0; font-weight: bold; letter-spacing: 5px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: #0f0f0f; padding: 40px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .card:hover { background: #1a1a1a; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: monospace; }
+        #launcher { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .btn { background: #a020f0; color: white; padding: 20px 40px; cursor: pointer; border: none; font-size: 1.5rem; }
         
-        /* THE FULL SCREEN FIX */
-        #gameOverlay {
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100vw; height: 100vh; background: #000; 
-            z-index: 9999; flex-direction: column;
-        }
-        iframe { border: none; width: 100%; height: 100%; overflow: hidden; }
-        .close-btn { 
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: #ff0055; color: #fff; border: none; padding: 10px 30px; 
-            cursor: pointer; font-family: inherit; font-weight: bold;
-        }
+        /* The Fullscreen Fix */
+        #game-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 999; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .close { position: absolute; bottom: 20px; right: 20px; background: red; color: white; padding: 10px; cursor: pointer; z-index: 1000; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo">TERMINAL</div>
-        <div onclick="location.reload()" style="cursor:pointer">REFRESH</div>
-    </nav>
-
-    <div class="grid">
-        <div class="card" onclick="launchGame('https://basketballstars-game.github.io/game/')">
-            <div style="font-size: 3rem;">🏀</div>
-            <h3>B-STARS</h3>
-        </div>
+    <div id="launcher">
+        <h1 style="color:#a020f0">SYSTEM READY</h1>
+        <button class="btn" onclick="openGame()">LAUNCH B-STARS</button>
     </div>
 
-    <div id="gameOverlay">
-        <iframe id="gameFrame" src="" allowfullscreen="true"></iframe>
-        <button class="close-btn" onclick="closeGame()">CLOSE SESSION</button>
+    <div id="game-container">
+        <div class="close" onclick="closeGame()">CLOSE</div>
+        <iframe id="frame" src=""></iframe>
     </div>
 
     <script>
-        function launchGame(url) {
-            const overlay = document.getElementById('gameOverlay');
-            const frame = document.getElementById('gameFrame');
-            
-            // Force the URL to be the direct game engine
-            frame.src = url;
-            overlay.style.display = 'flex';
+        function openGame() {
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('frame').src = 'https://basketballstars-game.github.io/game/';
         }
-
         function closeGame() {
-            const overlay = document.getElementById('gameOverlay');
-            const frame = document.getElementById('gameFrame');
-            overlay.style.display = 'none';
-            frame.src = ''; // Kill the process
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('frame').src = '';
         }
     </script>
 </body>

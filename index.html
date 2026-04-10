@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statics | Hub</title>
+    <title>ARSENIC | Static Hub</title>
     <style>
         :root {
             --accent: #a020f0; 
@@ -22,45 +22,46 @@
 
         /* --- NAVIGATION --- */
         nav {
-            padding: 1rem;
+            padding: 1.5rem;
             background: #000;
             border-bottom: 3px solid var(--accent);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--accent); letter-spacing: 3px; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: var(--accent); letter-spacing: 5px; text-shadow: 0 0 10px var(--accent); }
 
         .nav-links button {
             background: none;
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 15px;
             cursor: pointer;
             font-family: inherit;
             text-transform: uppercase;
+            font-size: 1rem;
             transition: 0.3s;
         }
 
-        .nav-links button:hover, .nav-links button.active {
-            color: var(--accent);
-            text-shadow: 0 0 10px var(--accent);
-        }
+        .nav-links button.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 
         /* --- PAGES --- */
-        .page { display: none; padding: 40px 5%; animation: fadeIn 0.5s; }
+        .page { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease-in; }
         .page.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- UI ELEMENTS --- */
+        .hero { text-align: center; padding: 80px 20px; background: radial-gradient(circle, #1a0033 0%, #050505 100%); }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .card {
@@ -68,110 +69,168 @@
             border: 2px solid #222;
             padding: 30px;
             text-align: center;
-            transition: 0.3s;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
 
-        .card:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent); }
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+            transform: translateY(-5px);
+        }
 
-        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(to bottom, #000, #11001a); }
-        
-        /* Overlay for Games/Apps */
+        /* --- OVERLAY PLAYER --- */
         .overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column;
             justify-content: center; align-items: center;
         }
-        iframe { border: 2px solid var(--accent); width: 90%; height: 80%; }
-        .close-btn { margin-top: 15px; color: #ff0055; border: 1px solid #ff0055; background: none; padding: 10px; cursor: pointer; }
+
+        .overlay iframe { 
+            border: 2px solid var(--accent); 
+            width: 90%; 
+            height: 80%; 
+            background: #000; 
+            box-shadow: 0 0 30px var(--accent); 
+        }
+
+        .terminate-btn {
+            margin-top: 20px;
+            background: none;
+            color: #ff0055;
+            border: 2px solid #ff0055;
+            padding: 10px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .terminate-btn:hover { background: #ff0055; color: white; }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo">STATICS</div>
+        <div class="logo">ARSENIC</div>
         <div class="nav-links">
-            <button onclick="showPage('home')" id="btn-home" class="active">Home</button>
-            <button onclick="showPage('games')" id="btn-games">Games</button>
-            <button onclick="showPage('apps')" id="btn-apps">Apps</button>
+            <button onclick="showPage('home')" id="btn-home" class="active">HOME</button>
+            <button onclick="showPage('games')" id="btn-games">GAMES</button>
+            <button onclick="showPage('apps')" id="btn-apps">APPS</button>
         </div>
     </nav>
 
     <div id="home" class="page active">
         <div class="hero">
-            <h1>Welcome to Statics</h1>
-            <p style="color: var(--accent);">Your centralized hub for web-based entertainment.</p>
+            <h1 style="font-size: 3.5rem; margin-bottom: 0;">ARSENIC HUB</h1>
+            <p style="color: var(--accent); letter-spacing: 2px;">STATION ONLINE // ENCRYPTED ACCESS</p>
         </div>
         <div class="grid">
             <div class="card" onclick="showPage('games')">
-                <h2>Browse Games</h2>
-                <p>400+ titles available</p>
+                <h2 style="color:var(--accent)">400+ GAMES</h2>
+                <p>Launch high-speed racing and arcade titles.</p>
             </div>
             <div class="card" onclick="showPage('apps')">
-                <h2>Utility Apps</h2>
-                <p>Tools and productivity</p>
+                <h2 style="color:var(--accent)">UTILITIES</h2>
+                <p>System tools and web applications.</p>
             </div>
         </div>
     </div>
 
     <div id="games" class="page">
-        <h1>Games Library</h1>
+        <h1>GAME DATABASE</h1>
         <div class="grid" id="gameGrid">
-            <div class="card" onclick="openGame('https://html5.gamedistribution.com/f312653358ec4c959a68e43bef2b72c6/')">
-                <div style="font-size:3rem">🏎️</div>
-                <h3>Slippery Drift</h3>
-                <button style="color:var(--accent); background:none; border:1px solid var(--accent)">PLAY</button>
-             </div>
-        </div>
+            </div>
     </div>
 
     <div id="apps" class="page">
-        <h1>Utility Apps</h1>
+        <h1>SYSTEM APPS</h1>
         <div class="grid">
             <div class="card">
-                <div style="font-size:3rem">📟</div>
-                <h3>Calculator</h3>
-                <p>Status: Offline</p>
+                <div style="font-size: 3rem;">☣️</div>
+                <h3>SYSTEM ANALYZER</h3>
+                <p>Status: Pending...</p>
             </div>
             <div class="card">
-                <div style="font-size:3rem">✍️</div>
-                <h3>Text Editor</h3>
-                <p>Status: Encrypted</p>
+                <div style="font-size: 3rem;">📟</div>
+                <h3>CALCULATOR</h3>
+                <p>Status: Offline</p>
             </div>
         </div>
     </div>
 
-    <div id="overlay" class="overlay">
-        <div id="container" style="width:100%; display:flex; justify-content:center;"></div>
-        <button class="close-btn" onclick="closeGame()">TERMINATE SESSION</button>
+    <div id="gameOverlay" class="overlay">
+        <div id="playerContainer" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
+        <button class="terminate-btn" onclick="terminateSession()">TERMINATE SESSION</button>
     </div>
 
     <script>
-        // PAGE SWITCHER LOGIC
+        // --- 1. GAME DATABASE ---
+        // Add your new game links here!
+        const myGames = [
+            { 
+                name: "Racing Limits", 
+                url: "https://www.addictinggames.com/embed/html5-games/20543", 
+                icon: "🏎️" 
+            },
+            { 
+                name: "Slippery Drift", 
+                url: "https://html5.gamedistribution.com/f312653358ec4c959a68e43bef2b72c6/", 
+                icon: "💨" 
+            }
+        ];
+
+        // --- 2. PAGE SWITCHING ---
         function showPage(pageId) {
-            // Hide all pages
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            // Deactivate all buttons
             document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
             
-            // Show selected page
             document.getElementById(pageId).classList.add('active');
-            // Active button
             document.getElementById('btn-' + pageId).classList.add('active');
         }
 
-        // GAME OPENER LOGIC
-        function openGame(url) {
-            const overlay = document.getElementById('overlay');
-            const container = document.getElementById('container');
+        // --- 3. GAME LAUNCHER ---
+        function launchGame(url) {
+            const overlay = document.getElementById('gameOverlay');
+            const container = document.getElementById('playerContainer');
             overlay.style.display = 'flex';
-            container.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+            container.innerHTML = `<iframe src="${url}" allowfullscreen="true" frameborder="0" scrolling="no"></iframe>`;
         }
 
-        function closeGame() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('container').innerHTML = '';
+        function terminateSession() {
+            document.getElementById('gameOverlay').style.display = 'none';
+            document.getElementById('playerContainer').innerHTML = '';
         }
+
+        // --- 4. BUILD THE GRID ---
+        function initGrid() {
+            const gameGrid = document.getElementById('gameGrid');
+            gameGrid.innerHTML = ''; // Clear existing content
+
+            // Load active games from the myGames list
+            myGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => launchGame(game.url);
+                card.innerHTML = `
+                    <div style="font-size: 3.5rem;">${game.icon}</div>
+                    <h3>${game.name}</h3>
+                    <p style="color:var(--accent)">READY TO INITIALIZE</p>
+                `;
+                gameGrid.appendChild(card);
+            });
+
+            // Fill up the rest to 400 slots
+            for(let i = myGames.length + 1; i <= 400; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'card';
+                slot.style.opacity = "0.2";
+                slot.innerHTML = `<h3>SLOT ${i}</h3><p>ENCRYPTED</p>`;
+                gameGrid.appendChild(slot);
+            }
+        }
+
+        // Initialize grid on load
+        initGrid();
     </script>
 </body>
 </html>

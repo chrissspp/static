@@ -55,17 +55,19 @@
             const typewriter = document.getElementById('typewriter');
             const phrase = "welcome to static.";
             let i = 0;
-            function type() {
-                if (i < phrase.length) {
-                    const span = document.createElement('span');
-                    if (i >= 11) span.className = 'rainbow';
-                    span.textContent = phrase[i];
-                    typewriter.appendChild(span);
-                    i++;
-                    setTimeout(type, 100);
+            if (typewriter) {
+                function type() {
+                    if (i < phrase.length) {
+                        const span = document.createElement('span');
+                        if (i >= 11) span.className = 'rainbow';
+                        span.textContent = phrase[i];
+                        typewriter.appendChild(span);
+                        i++;
+                        setTimeout(type, 100);
+                    }
                 }
+                type();
             }
-            type();
         });
 
         document.getElementById('proxy-form').onsubmit = (e) => {

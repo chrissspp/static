@@ -8,81 +8,58 @@
     <style>
         :root {
             --accent: #a020f0;
-            --bg: #050505;
+            --bg: #000000;
             --text-main: #ffffff;
         }
 
-        body, html { 
-            margin: 0; padding: 0; background: var(--bg); 
-            color: var(--text-main); font-family: 'Outfit', sans-serif; 
-            overflow: hidden; 
-        }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text-main); font-family: 'Outfit', sans-serif; overflow: hidden; }
 
-        .fade-in { animation: fadeIn 2s ease-in forwards; opacity: 0; }
+        .fade-in { animation: fadeIn 1s ease-in forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         nav { display: flex; justify-content: center; padding: 30px; gap: 60px; }
-        .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.3; transition: all 0.4s ease; }
+        .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.3; transition: 0.4s; }
         .nav-item:hover { opacity: 1; color: var(--accent); transform: scale(1.2); }
 
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 75vh;
-            text-align: center;
-        }
-
-        .typing-container {
-            display: flex;
-            align-items: center;
-            height: 6rem;
-            margin-bottom: 5px;
-        }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 75vh; text-align: center; }
+        .typing-container { display: flex; align-items: center; height: 6rem; margin-bottom: 5px; }
 
         #typewriter {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem; font-weight: 700;
-            letter-spacing: 2px;
-            text-transform: lowercase;
-            display: flex;
-            flex-wrap: nowrap;
+            letter-spacing: 2px; text-transform: lowercase;
+            display: flex; flex-wrap: nowrap;
         }
 
-        /* --- CHARACTER STYLE & FLOAT --- */
+        /* --- CHARACTER STYLE & FAST FLOAT --- */
         #typewriter span {
             display: inline-block;
             min-width: 10px;
-            /* Faster float to match the fast rainbow */
-            animation: charFloat 2s ease-in-out infinite;
+            animation: charFloat 1.2s ease-in-out infinite; /* Crunched to 1.2s */
         }
 
-        #typewriter span.space {
-            width: 1.5rem;
-        }
+        #typewriter span.space { width: 1.5rem; }
 
-        /* --- FAST RAINBOW --- */
+        /* --- ULTRA FAST RAINBOW --- */
         #typewriter span.rainbow {
             background-image: linear-gradient(
                 90deg, 
-                #ff0055, #ffcc00, #33ff00, 
-                #00ffee, #a020f0, #ff0055
+                #ff0000, #ffcc00, #00ff00, 
+                #00ffff, #0000ff, #ff00ff, #ff0000
             );
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            background-size: 300% 100%;
-            /* 1.5s is the "Fast" setting */
-            animation: charFloat 2s ease-in-out infinite, rainbowShift 1.5s linear infinite;
+            background-size: 200% 100%;
+            /* 0.5s = LIGHT SPEED */
+            animation: charFloat 1.2s ease-in-out infinite, rainbowShift 0.5s linear infinite;
         }
 
         @keyframes charFloat {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
 
-        /* Shifts the background gradient rapidly */
         @keyframes rainbowShift {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
@@ -91,8 +68,8 @@
         .cursor {
             width: 8px; height: 4.5rem; background-color: var(--accent);
             margin-left: 20px; border-radius: 2px;
-            animation: blink 0.8s infinite;
-            box-shadow: 0 0 15px var(--accent);
+            animation: blink 0.5s infinite;
+            box-shadow: 0 0 20px var(--accent);
         }
 
         @keyframes blink { 50% { opacity: 0; } }
@@ -104,10 +81,10 @@
             border-radius: 4px; font-family: 'Space Grotesk', sans-serif;
             font-weight: 700; font-size: 1rem; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.4s; text-transform: uppercase; letter-spacing: 5px;
+            transition: 0.4s; text-transform: uppercase; letter-spacing: 5px;
         }
 
-        .btn-start:hover { background: white; color: black; transform: translateY(-8px); }
+        .btn-start:hover { background: white; color: black; box-shadow: 0 0 50px rgba(160, 32, 240, 0.4); }
 
         #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         iframe { width: 100%; height: 100%; border: none; }
@@ -139,15 +116,8 @@
 
     <script>
         const typewriterElement = document.getElementById('typewriter');
-        
         const introPhrase = "welcome to static.";
-        const loopPhrases = [
-            "access granted.", 
-            "unblock the world.", 
-            "play without fear.",
-            "the web is yours.",
-            "encryption active."
-        ];
+        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "the web is yours.", "encryption active."];
 
         let phraseIndex = -1;
         let charIndex = 0;
@@ -171,28 +141,28 @@
                     
                     if (char !== " ") span.textContent = char;
                     
-                    span.style.animationDelay = `${charIndex * 0.08}s`; 
+                    span.style.animationDelay = `${charIndex * 0.05}s`; // Faster wave buildup
                     typewriterElement.appendChild(span);
                     charIndex++;
-                    typeSpeed = 70;
+                    typeSpeed = 40; // Faster Typing
                 }
             } else {
                 if (charIndex > 0) {
                     typewriterElement.removeChild(typewriterElement.lastChild);
                     charIndex--;
-                    typeSpeed = 30;
+                    typeSpeed = 15; // Whiplash Deleting
                 }
             }
 
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true; 
-                typeSpeed = 3000; 
+                typeSpeed = 2000; 
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 typewriterElement.innerHTML = '';
                 if (phraseIndex === -1) { phraseIndex = 0; } 
                 else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
-                typeSpeed = 500;
+                typeSpeed = 200;
             }
 
             setTimeout(type, typeSpeed);

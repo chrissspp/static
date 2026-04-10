@@ -9,10 +9,9 @@
         :root {
             --accent: #a020f0;
             --bg: #000000;
-            --text-main: #ffffff;
         }
 
-        body, html { margin: 0; padding: 0; background: var(--bg); color: var(--text-main); font-family: 'Outfit', sans-serif; overflow: hidden; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Outfit', sans-serif; overflow: hidden; }
 
         .fade-in { animation: fadeIn 1s ease-in forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -31,19 +30,18 @@
             display: flex; flex-wrap: nowrap;
         }
 
-        /* --- CHARACTER STYLE & FAST FLOAT --- */
         #typewriter span {
             display: inline-block;
             min-width: 10px;
-            animation: charFloat 1.2s ease-in-out infinite; /* Crunched to 1.2s */
+            animation: charFloat 1.2s ease-in-out infinite;
         }
 
         #typewriter span.space { width: 1.5rem; }
 
-        /* --- ULTRA FAST RAINBOW --- */
+        /* --- THE REVERSED RAINBOW --- */
         #typewriter span.rainbow {
             background-image: linear-gradient(
-                90deg, 
+                -90deg, /* Flipped the direction */
                 #ff0000, #ffcc00, #00ff00, 
                 #00ffff, #0000ff, #ff00ff, #ff0000
             );
@@ -51,8 +49,13 @@
             background-clip: text;
             color: transparent;
             background-size: 200% 100%;
-            /* 0.5s = LIGHT SPEED */
+            /* Animation starts normal */
             animation: charFloat 1.2s ease-in-out infinite, rainbowShift 0.5s linear infinite;
+        }
+
+        /* --- THE FREEZE CLASS --- */
+        #typewriter span.rainbow.frozen {
+            animation-play-state: running, paused; /* Floats, but rainbow stops */
         }
 
         @keyframes charFloat {
@@ -61,8 +64,8 @@
         }
 
         @keyframes rainbowShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
+            0% { background-position: 100% 50%; } /* Flipped start pos */
+            100% { background-position: 0% 50%; } /* Flipped end pos */
         }
 
         .cursor {
@@ -141,20 +144,26 @@
                     
                     if (char !== " ") span.textContent = char;
                     
-                    span.style.animationDelay = `${charIndex * 0.05}s`; // Faster wave buildup
+                    span.style.animationDelay = `${charIndex * 0.05}s`; 
                     typewriterElement.appendChild(span);
                     charIndex++;
-                    typeSpeed = 40; // Faster Typing
+                    typeSpeed = 40;
                 }
             } else {
+                // UNFREEZE when deleting starts
+                document.querySelectorAll('.rainbow').forEach(s => s.classList.remove('frozen'));
+                
                 if (charIndex > 0) {
                     typewriterElement.removeChild(typewriterElement.lastChild);
                     charIndex--;
-                    typeSpeed = 15; // Whiplash Deleting
+                    typeSpeed = 15;
                 }
             }
 
             if (!isDeleting && charIndex === currentPhrase.length) {
+                // FREEZE the rainbow when the word is finished
+                document.querySelectorAll('.rainbow').forEach(s => s.classList.add('frozen'));
+                
                 isDeleting = true; 
                 typeSpeed = 2000; 
             } else if (isDeleting && charIndex === 0) {

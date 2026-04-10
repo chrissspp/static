@@ -50,7 +50,7 @@
         </div>
         <div class="proxy-wrapper">
             <form id="proxy-form">
-                <input type="text" class="proxy-input" id="url-input" placeholder="Search the web freely..." autocomplete="off">
+                <input type="text" class="proxy-input" id="url-input" placeholder="Search freely..." autocomplete="off">
                 <button type="submit" class="btn-go">GO</button>
             </form>
         </div>
@@ -64,7 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     
     <script>
-        // 1. CONFIG
+        // --- 1. CONFIG ---
         window.__scramjet$config = {
             prefix: '/service/',
             codec: 'xor',
@@ -75,15 +75,15 @@
             }
         };
 
-        // 2. SW REGISTRATION
+        // --- 2. REGISTRATION ---
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
-                .then(() => console.log("Static Engine: Online"))
-                .catch(err => console.error("SW Registration Failed:", err));
+                .then(() => console.log("Engine: Online"))
+                .catch(err => console.error("Engine: Offline", err));
         }
 
-        // 3. TYPEWRITER (Fixed appendChild error)
-        window.addEventListener('load', () => {
+        // --- 3. TYPEWRITER (Fixed appendChild error) ---
+        window.addEventListener('DOMContentLoaded', () => {
             const typewriter = document.getElementById('typewriter');
             const phrase = "welcome to static.";
             let charIdx = 0;
@@ -103,19 +103,14 @@
             }
         });
 
-        // 4. SEARCH LOGIC (Fixed 404/Search issue)
+        // --- 4. SEARCH HANDLING ---
         document.getElementById('proxy-form').onsubmit = (e) => {
             e.preventDefault();
             const val = document.getElementById('url-input').value.trim();
             if (!val) return;
 
-            let target = val;
-            if (!val.includes('.')) {
-                target = 'https://www.google.com/search?q=' + encodeURIComponent(val);
-            } else if (!val.startsWith('http')) {
-                target = 'https://' + val;
-            }
-
+            let target = val.includes('.') ? (val.startsWith('http') ? val : 'https://' + val) : 'https://www.google.com/search?q=' + encodeURIComponent(val);
+            
             document.getElementById('game-overlay').style.display = 'block';
             const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
             document.getElementById('game-frame').src = encoded;

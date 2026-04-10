@@ -64,85 +64,50 @@
     </div>
 
     <script>
-        // --- SCRAMJET CONFIG INTEGRATION ---
-        window.__scramjet$config = {
-            prefix: '/service/',
-            codec: 'xor',
-            encodeUrl: (str) => {
-                if (!str) return str;
-                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-            }
-        };
+    <script src="/scram/scramjet.all.js"></script> <script>
+    // --- 1. NEW SCRAMJET CONFIG ---
+    window.__scramjet$config = {
+        prefix: '/service/',
+        codec: 'xor',
+        // Updated 2026 Bare Server (If this fails, search for "Bare Server links")
+        bare: 'https://bare.benroxy.com/', 
+        encodeUrl: (str) => {
+            if (!str) return str;
+            return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+        }
+    };
 
-        // --- SERVICE WORKER REGISTRATION ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: __scramjet$config.prefix });
-            });
+    // --- 2. REGISTRATION ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js', { scope: __scramjet$config.prefix });
+        });
+    }
+
+    // --- 3. THE PROXY GO BUTTON ---
+    const form = document.getElementById('proxy-form');
+    const input = document.getElementById('url-input');
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        const url = input.value.trim();
+        if (!url) return;
+
+        document.getElementById('game-overlay').style.display = 'block';
+        
+        let targetUrl = url;
+        if (!url.startsWith('http')) {
+            targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
+            targetUrl = 'https://' + url;
         }
 
-        // --- TYPEWRITER LOGIC ---
-        const typewriterElement = document.getElementById('typewriter');
-        const introPhrase = "welcome to static.";
-        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "encryption active."];
-        let phraseIndex = -1, charIndex = 0, isDeleting = false, typeSpeed = 100;
+        // Use the modern prefix + encoded path
+        const proxiedUrl = __scramjet$config.prefix + __scramjet$config.encodeUrl(targetUrl);
+        document.getElementById('game-frame').src = proxiedUrl;
+    };
 
-        function type() {
-            let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
-            if (!isDeleting) {
-                if (charIndex < currentPhrase.length) {
-                    const char = currentPhrase.charAt(charIndex);
-                    const span = document.createElement('span');
-                    if (phraseIndex === -1 && charIndex >= 11) {
-                        span.className = "rainbow"; 
-                        if (char === " ") span.className += " space";
-                    } else if (char === " ") { span.className = "space"; }
-                    if (char !== " ") span.textContent = char;
-                    span.style.animationDelay = `${charIndex * 0.05}s`; 
-                    typewriterElement.appendChild(span);
-                    charIndex++; typeSpeed = 40;
-                }
-            } else {
-                if (charIndex > 0) { typewriterElement.removeChild(typewriterElement.lastChild); charIndex--; typeSpeed = 15; }
-            }
-            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; } 
-            else if (isDeleting && charIndex === 0) {
-                isDeleting = false; typewriterElement.innerHTML = '';
-                if (phraseIndex === -1) { phraseIndex = 0; } else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
-                typeSpeed = 200;
-            }
-            setTimeout(type, typeSpeed);
-        }
-        window.onload = type;
-
-        // --- PROXY HANDLER ---
-        const form = document.getElementById('proxy-form');
-        const input = document.getElementById('url-input');
-
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            openProxy(input.value.trim());
-        };
-
-        function openProxy(url) {
-            if (!url) return;
-            document.getElementById('game-overlay').style.display = 'block';
-            let targetUrl = url;
-            if (!url.startsWith('http')) {
-                targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
-                targetUrl = 'https://' + url;
-            }
-            
-            // Apply Scramjet XOR encoding from the config above
-            const proxiedUrl = __scramjet$config.prefix + __scramjet$config.encodeUrl(targetUrl);
-            document.getElementById('game-frame').src = proxiedUrl;
-        }
-
-        function closeGame() {
-            document.getElementById('game-overlay').style.display = 'none';
-            document.getElementById('game-frame').src = '';
-        }
-    </script>
+    // --- [KEEP YOUR RAINBOW TYPING LOGIC HERE] ---
+</script>
 </body>
 </html>

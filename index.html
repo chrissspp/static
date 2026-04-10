@@ -18,28 +18,13 @@
             overflow: hidden; 
         }
 
-        .fade-in {
-            animation: fadeIn 2s ease-in forwards;
-            opacity: 0;
-        }
+        .fade-in { animation: fadeIn 2s ease-in forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- NAV --- */
         nav { display: flex; justify-content: center; padding: 30px; gap: 60px; }
-        .nav-item { 
-            font-size: 1.8rem; cursor: pointer; opacity: 0.3; 
-            transition: all 0.4s ease;
-        }
-        .nav-item:hover { 
-            opacity: 1; color: var(--accent); transform: scale(1.2);
-            filter: drop-shadow(0 0 8px var(--accent));
-        }
+        .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.3; transition: all 0.4s ease; }
+        .nav-item:hover { opacity: 1; color: var(--accent); transform: scale(1.2); }
 
-        /* --- HERO --- */
         .hero {
             display: flex;
             flex-direction: column;
@@ -54,25 +39,32 @@
             align-items: center;
             height: 6rem;
             margin-bottom: 5px;
-            /* Container NO LONGER floats */
         }
 
         #typewriter {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem; font-weight: 700;
-            letter-spacing: -3px; text-transform: lowercase;
-            display: flex; /* Key for inline character animation */
+            letter-spacing: 2px; /* Added spacing between letters */
+            text-transform: lowercase;
+            display: flex;
+            flex-wrap: nowrap;
         }
 
-        /* --- INDIVIDUAL CHARACTER FLOAT --- */
+        /* --- CHARACTER STYLE & FLOAT --- */
         #typewriter span {
             display: inline-block;
+            min-width: 10px; /* Ensures letters don't touch */
             animation: charFloat 2.5s ease-in-out infinite;
+        }
+
+        /* Dedicated style for spaces to keep words separate */
+        #typewriter span.space {
+            width: 1.5rem; /* The width of the gap between words */
         }
 
         @keyframes charFloat {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); } /* Stronger move for visibility */
+            50% { transform: translateY(-20px); }
         }
 
         .cursor {
@@ -84,11 +76,7 @@
 
         @keyframes blink { 50% { opacity: 0; } }
 
-        .hero p { 
-            opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; 
-            font-weight: 300; letter-spacing: 4px; text-transform: uppercase;
-            /* Simple fade-in only for sub-header now */
-        }
+        .hero p { opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; letter-spacing: 4px; text-transform: uppercase; }
 
         .btn-start {
             background: transparent; color: white; padding: 18px 60px;
@@ -98,21 +86,11 @@
             transition: all 0.4s; text-transform: uppercase; letter-spacing: 5px;
         }
 
-        .btn-start:hover { 
-            background: white; color: black;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-            transform: translateY(-8px);
-        }
+        .btn-start:hover { background: white; color: black; transform: translateY(-8px); }
 
-        /* --- OVERLAY --- */
         #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { 
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); 
-            background: white; color: black; padding: 10px 30px; border: none; 
-            cursor: pointer; font-weight: bold; font-family: 'Space Grotesk', sans-serif;
-            letter-spacing: 2px;
-        }
+        .close-btn { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 10px 30px; border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -146,7 +124,7 @@
             "access granted.", 
             "unblock the world.", 
             "play without fear.",
-            "no restrictions.", 
+            "the web is yours.",
             "encryption active."
         ];
 
@@ -158,47 +136,40 @@
         function type() {
             const currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
 
-            // --- THE NEW FLOATING INJECTION ---
             if (!isDeleting) {
-                // When TYPING: Inject spans with staggered delays
                 if (charIndex < currentPhrase.length) {
                     const char = currentPhrase.charAt(charIndex);
                     const span = document.createElement('span');
-                    span.textContent = char;
                     
-                    // Stagger: Delays are cumulative based on charIndex
-                    span.style.animationDelay = `${charIndex * 0.05}s`; // Smooth wave
-
+                    // If the character is a space, add the "space" class
+                    if (char === " ") {
+                        span.className = "space";
+                    } else {
+                        span.textContent = char;
+                    }
+                    
+                    span.style.animationDelay = `${charIndex * 0.08}s`; 
                     typewriterElement.appendChild(span);
                     charIndex++;
-                    typeSpeed = 70; // Typing speed
+                    typeSpeed = 70;
                 }
             } else {
-                // When DELETING: Just remove the last span
                 if (charIndex > 0) {
                     typewriterElement.removeChild(typewriterElement.lastChild);
                     charIndex--;
-                    typeSpeed = 30; // Fast delete
+                    typeSpeed = 30;
                 }
             }
 
-            // --- Switching Logic (Remains the same) ---
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true; 
-                typeSpeed = 3000; // Pause at end of phrase
+                typeSpeed = 3000; 
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
-                
-                // Clear any lingering spaces
                 typewriterElement.innerHTML = '';
-                
-                if (phraseIndex === -1) {
-                    phraseIndex = 0;
-                } else {
-                    phraseIndex = (phraseIndex + 1) % loopPhrases.length;
-                }
-                
-                typeSpeed = 500; // Pause before next phrase
+                if (phraseIndex === -1) { phraseIndex = 0; } 
+                else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
+                typeSpeed = 500;
             }
 
             setTimeout(type, typeSpeed);

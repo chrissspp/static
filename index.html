@@ -126,70 +126,89 @@
     </div>
 
     <script>
-        const typewriterElement = document.getElementById('typewriter');
-        const introPhrase = "welcome to static.";
-        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "encryption active."];
+    const typewriterElement = document.getElementById('typewriter');
+    const introPhrase = "welcome to static.";
+    const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "the web is yours.", "encryption active."];
 
-        let phraseIndex = -1, charIndex = 0, isDeleting = false, typeSpeed = 100;
+    let phraseIndex = -1, charIndex = 0, isDeleting = false, typeSpeed = 100;
 
-        function type() {
-            let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
-            if (!isDeleting) {
-                if (charIndex < currentPhrase.length) {
-                    const char = currentPhrase.charAt(charIndex);
-                    const span = document.createElement('span');
-                    if (phraseIndex === -1 && charIndex >= 11) {
-                        span.className = "rainbow"; 
-                        if (char === " ") span.className += " space";
-                    } else if (char === " ") { span.className = "space"; }
-                    if (char !== " ") span.textContent = char;
-                    span.style.animationDelay = `${charIndex * 0.05}s`; 
-                    typewriterElement.appendChild(span);
-                    charIndex++; typeSpeed = 40;
-                }
-            } else {
-                if (charIndex > 0) { typewriterElement.removeChild(typewriterElement.lastChild); charIndex--; typeSpeed = 15; }
+    // --- 1. REGISTER SCRAMJET SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // This registers the sw.js you just created
+            navigator.serviceWorker.register('./sw.js', {
+                scope: '/service/' 
+            }).then(() => {
+                console.log('Static Proxy: Engine Online');
+            }).catch(err => {
+                console.error('Static Proxy: Engine Offline', err);
+            });
+        });
+    }
+
+    // --- 2. TYPEWRITER LOGIC (Rainbow & Floating) ---
+    function type() {
+        let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
+        if (!isDeleting) {
+            if (charIndex < currentPhrase.length) {
+                const char = currentPhrase.charAt(charIndex);
+                const span = document.createElement('span');
+                if (phraseIndex === -1 && charIndex >= 11) {
+                    span.className = "rainbow"; 
+                    if (char === " ") span.className += " space";
+                } else if (char === " ") { span.className = "space"; }
+                if (char !== " ") span.textContent = char;
+                span.style.animationDelay = `${charIndex * 0.05}s`; 
+                typewriterElement.appendChild(span);
+                charIndex++; typeSpeed = 40;
             }
-
-            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; } 
-            else if (isDeleting && charIndex === 0) {
-                isDeleting = false; typewriterElement.innerHTML = '';
-                if (phraseIndex === -1) { phraseIndex = 0; } else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
-                typeSpeed = 200;
-            }
-            setTimeout(type, typeSpeed);
+        } else {
+            if (charIndex > 0) { typewriterElement.removeChild(typewriterElement.lastChild); charIndex--; typeSpeed = 15; }
         }
 
-        window.onload = type;
+        if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; } 
+        else if (isDeleting && charIndex === 0) {
+            isDeleting = false; typewriterElement.innerHTML = '';
+            if (phraseIndex === -1) { phraseIndex = 0; } else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
+            typeSpeed = 200;
+        }
+        setTimeout(type, typeSpeed);
+    }
+    window.onload = type;
 
-        // --- PROXY HANDLER ---
-        const form = document.getElementById('proxy-form');
-        const input = document.getElementById('url-input');
+    // --- 3. PROXY HANDLER (Scramjet Integration) ---
+    const form = document.getElementById('proxy-form');
+    const input = document.getElementById('url-input');
 
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            const url = input.value;
-            // Using a public Ultraviolet/Corrosion link as a placeholder
-            // Replace with your own logic/endpoint
-            openProxy(url);
-        };
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const url = input.value.trim();
+        if (!url) return;
 
-        function openProxy(url) {
-            document.getElementById('game-overlay').style.display = 'block';
-            // We'll use a search engine logic: if it's not a URL, search it on Google
-            let targetUrl = url;
-            if (!url.startsWith('http')) {
-                targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            }
-            // For a TRUE proxy, you'd prepend your proxy URL here:
-            // e.g., 'https://my-proxy-instance.com/service/' + targetUrl
-            document.getElementById('game-frame').src = targetUrl;
+        document.getElementById('game-overlay').style.display = 'block';
+        
+        // Prepare the URL
+        let targetUrl = url;
+        if (!url.startsWith('http')) {
+            targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+        } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
+            targetUrl = 'https://' + url;
         }
 
-        function closeGame() {
-            document.getElementById('game-overlay').style.display = 'none';
-            document.getElementById('game-frame').src = '';
-        }
-    </script>
+        /**
+         * SCRAMJET ENCODING
+         * This assumes you have scramjet.config.js loaded.
+         * If using the standard Scramjet XOR/Base64 setup:
+         */
+        const proxiedUrl = "/service/" + btoa(targetUrl); // Simple Base64 for now, or use Scramjet's encoder
+        
+        document.getElementById('game-frame').src = proxiedUrl;
+    };
+
+    function closeGame() {
+        document.getElementById('game-overlay').style.display = 'none';
+        document.getElementById('game-frame').src = '';
+    }
+</script>
 </body>
 </html>

@@ -7,7 +7,7 @@
     <style>
         :root {
             --accent: #a020f0; 
-            --bg-deep: #050505; 
+            --bg-deep: #000000; /* Pure black to hide gaps */
             --card-bg: #0f0f0f;
             --text: #ffffff;
         }
@@ -17,7 +17,7 @@
             background-color: var(--bg-deep);
             color: var(--text);
             margin: 0;
-            overflow: hidden; /* Prevent double scrolling */
+            overflow: hidden;
         }
 
         /* --- NAVIGATION --- */
@@ -27,9 +27,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
         }
 
         .logo { font-size: 1.8rem; font-weight: bold; color: var(--accent); letter-spacing: 5px; }
@@ -42,19 +39,13 @@
             cursor: pointer;
             font-family: inherit;
             text-transform: uppercase;
-            font-size: 1rem;
-            transition: 0.3s;
         }
 
         .nav-links button.active { color: var(--accent); }
 
         /* --- PAGES --- */
-        .page { display: none; padding: 40px 5%; animation: fadeIn 0.4s ease-in; height: 100vh; overflow-y: auto; }
+        .page { display: none; padding: 40px 5%; height: 100vh; overflow-y: auto; }
         .page.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .hero { text-align: center; padding: 80px 20px; background: radial-gradient(circle, #1a0033 0%, #050505 100%); }
 
         .grid {
             display: grid;
@@ -68,43 +59,45 @@
             background: var(--card-bg);
             padding: 30px;
             text-align: center;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
 
-        .card:hover {
-            background: #151515;
-            transform: translateY(-5px);
-        }
+        .card:hover { background: #151515; }
 
-        /* --- OVERLAY PLAYER --- */
+        /* --- THE FIX: NO BORDERS / NO HEADERS OVERLAY --- */
         .overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000; flex-direction: column;
-            justify-content: center; align-items: center;
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: #000; 
+            z-index: 2000; 
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .overlay iframe { 
             width: 100%; 
-            height: 90%; 
+            height: 100%; /* Game fills the screen */
             background: #000; 
             border: none;
-            display: block;
+            outline: none;
         }
 
         .terminate-btn {
             background: #ff0055;
             color: white;
             border: none; 
-            padding: 15px 50px;
+            padding: 10px 40px;
             cursor: pointer;
             font-weight: bold;
-            text-transform: uppercase;
             font-family: inherit;
-            letter-spacing: 2px;
+            margin-bottom: 10px;
+            z-index: 2001;
         }
-
-        .terminate-btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -114,65 +107,34 @@
         <div class="nav-links">
             <button onclick="showPage('home')" id="btn-home" class="active">HOME</button>
             <button onclick="showPage('games')" id="btn-games">GAMES</button>
-            <button onclick="showPage('apps')" id="btn-apps">APPS</button>
         </div>
     </nav>
 
     <div id="home" class="page active">
-        <div class="hero">
-            <h1 style="font-size: 3.5rem; margin-bottom: 0;">VIRTUAL HUB</h1>
-            <p style="color: var(--accent); letter-spacing: 2px;">ENCRYPTED // NO-BORDER INTERFACE</p>
-        </div>
         <div class="grid">
             <div class="card" onclick="showPage('games')">
                 <h2 style="color:var(--accent)">GAMES</h2>
                 <p>Launch high-fidelity titles.</p>
             </div>
-            <div class="card" onclick="showPage('apps')">
-                <h2 style="color:var(--accent)">SYSTEM APPS</h2>
-                <p>Web-based utility tools.</p>
-            </div>
         </div>
     </div>
 
     <div id="games" class="page">
-        <h1>DATABASE</h1>
         <div class="grid" id="gameGrid"></div>
     </div>
 
-    <div id="apps" class="page">
-        <h1>SYSTEM APPS</h1>
-        <div class="grid">
-            <div class="card">
-                <div style="font-size: 3rem;">📟</div>
-                <h3>CALCULATOR</h3>
-                <p>Status: Active</p>
-            </div>
-            <div class="card">
-                <div style="font-size: 3rem;">🛡️</div>
-                <h3>SYSTEM CHECK</h3>
-                <p>Status: Clear</p>
-            </div>
-        </div>
-    </div>
-
     <div id="gameOverlay" class="overlay">
-        <div id="playerContainer" style="width:100%; height:100%; display:flex; flex-direction: column;"></div>
+        <iframe id="gameFrame" src="" allowfullscreen="true" scrolling="no"></iframe>
         <button class="terminate-btn" onclick="terminateSession()">CLOSE SESSION</button>
     </div>
 
     <script>
-        // UPDATED: Direct game link to remove headers/ads
+        // THIS URL IS THE SECRET: It bypasses the website wrapper
         const myGames = [
             { 
                 name: "Basketball Stars", 
                 url: "https://basketballstars-game.github.io/game/", 
                 icon: "🏀" 
-            },
-            { 
-                name: "Racing Limits", 
-                url: "https://www.addictinggames.com/embed/html5-games/20543", 
-                icon: "🏎️" 
             }
         ];
 
@@ -184,48 +146,25 @@
         }
 
         function launchGame(url) {
-            const overlay = document.getElementById('gameOverlay');
-            const container = document.getElementById('playerContainer');
-            overlay.style.display = 'flex';
-            container.innerHTML = `
-                <iframe 
-                    src="${url}" 
-                    allowfullscreen="true" 
-                    scrolling="no">
-                </iframe>`;
+            document.getElementById('gameOverlay').style.display = 'flex';
+            document.getElementById('gameFrame').src = url;
         }
 
         function terminateSession() {
             document.getElementById('gameOverlay').style.display = 'none';
-            document.getElementById('playerContainer').innerHTML = '';
+            document.getElementById('gameFrame').src = '';
         }
 
         function initGrid() {
             const gameGrid = document.getElementById('gameGrid');
-            gameGrid.innerHTML = ''; 
-
             myGames.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => launchGame(game.url);
-                card.innerHTML = `
-                    <div style="font-size: 3.5rem;">${game.icon}</div>
-                    <h3>${game.name}</h3>
-                    <p style="color:var(--accent)">LAUNCH</p>
-                `;
+                card.innerHTML = `<div style="font-size: 3rem;">${game.icon}</div><h3>${game.name}</h3>`;
                 gameGrid.appendChild(card);
             });
-
-            // Empty slots for aesthetic
-            for(let i = myGames.length + 1; i <= 20; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'card';
-                slot.style.opacity = "0.1";
-                slot.innerHTML = `<h3>SLOT ${i}</h3>`;
-                gameGrid.appendChild(slot);
-            }
         }
-
         initGrid();
     </script>
 </body>

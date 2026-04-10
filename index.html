@@ -8,31 +8,14 @@
         :root {
             --accent: #a020f0;
             --bg: #050505;
-            --nav-bg: #000000;
         }
 
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: sans-serif; overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        /* --- GOINTOSPACE STYLE NAV --- */
-        nav {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            background: var(--nav-bg);
-            gap: 40px;
-        }
-
-        .nav-item {
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.3s;
-        }
-
+        nav { display: flex; justify-content: center; padding: 20px; gap: 50px; }
+        .nav-item { font-size: 1.6rem; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .nav-item:hover { opacity: 1; color: var(--accent); }
 
-        /* --- HERO SECTION --- */
         .hero {
             display: flex;
             flex-direction: column;
@@ -42,75 +25,124 @@
             text-align: center;
         }
 
-        .hero h1 { font-size: 3.5rem; margin-bottom: 10px; }
-        .hero p { opacity: 0.7; margin-bottom: 30px; font-size: 1.2rem; }
+        /* Container for the typing text to prevent jumping */
+        .typing-container {
+            font-size: 4rem;
+            font-weight: 800;
+            height: 1.2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        #typewriter { color: white; }
+
+        /* The Blinking Cursor */
+        .cursor {
+            width: 5px;
+            height: 4rem;
+            background-color: var(--accent);
+            margin-left: 10px;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .hero p { opacity: 0.6; font-size: 1.3rem; margin-bottom: 35px; }
 
         .btn-start {
             background: var(--accent);
             color: white;
-            padding: 15px 40px;
+            padding: 18px 45px;
             border-radius: 50px;
-            text-decoration: none;
             font-weight: bold;
             font-size: 1.1rem;
             cursor: pointer;
             border: none;
+            transition: 0.3s;
         }
 
-        /* --- FULLSCREEN GAME OVERLAY --- */
-        #game-overlay {
-            display: none; position: fixed; top: 0; left: 0; 
-            width: 100vw; height: 100vh; background: #000; z-index: 1000;
-        }
-        
+        .btn-start:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent); }
+
+        /* Overlay */
+        #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         iframe { width: 100%; height: 100%; border: none; }
-
-        .close-session {
-            position: absolute; bottom: 20px; right: 20px;
-            background: rgba(255, 0, 85, 0.8); color: white;
-            padding: 10px 20px; border-radius: 5px; cursor: pointer;
-        }
+        .close-btn { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: #ff0055; color: white; padding: 10px 20px; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="nav-item" onclick="showSection('home')">🏠</div>
-        <div class="nav-item" onclick="showSection('games')">🕹️</div>
-        <div class="nav-item" onclick="showSection('apps')">📱</div>
-        <div class="nav-item" onclick="showSection('settings')">⚙️</div>
+        <div class="nav-item" onclick="location.reload()">🏠</div>
+        <div class="nav-item" onclick="openGame()">🕹️</div>
+        <div class="nav-item">📱</div>
+        <div class="nav-item">⚙️</div>
     </nav>
 
-    <div id="home" class="section">
-        <div class="hero">
-            <h1>Welcome to freedom.</h1>
-            <p>Start your unblocking journey today!</p>
-            <button class="btn-start" onclick="showSection('games')">Get Started</button>
+    <div class="hero">
+        <div class="typing-container">
+            <span id="typewriter"></span>
+            <div class="cursor"></div>
         </div>
-    </div>
-
-    <div id="games" class="section" style="display:none; padding: 50px;">
-        <div style="background:#111; padding:40px; border-radius:15px; text-align:center; cursor:pointer;" 
-             onclick="launchGame('https://basketballstars-game.github.io/game/')">
-            <h2>B-STARS</h2>
-            <p>Direct Clean Link</p>
-        </div>
+        <p>Start your unblocking journey today!</p>
+        <button class="btn-start" onclick="openGame()">Get Started</button>
     </div>
 
     <div id="game-overlay">
-        <div class="close-session" onclick="closeGame()">CLOSE</div>
         <iframe id="game-frame" src=""></iframe>
+        <button class="close-btn" onclick="closeGame()">CLOSE SESSION</button>
     </div>
 
     <script>
-        function showSection(id) {
-            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
+        const typewriterElement = document.getElementById('typewriter');
+        
+        // Add whatever phrases you want here
+        const phrases = [
+            "Welcome to freedom.",
+            "Play your favorite games.",
+            "Access anything, anywhere.",
+            "The ultimate hub."
+        ];
+
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
+
+        function type() {
+            const currentPhrase = phrases[phraseIndex];
+
+            if (isDeleting) {
+                // Remove a character
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // Faster when deleting
+            } else {
+                // Add a character
+                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 100;
+            }
+
+            // If phrase is complete
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Wait at the end of the phrase
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length; // Move to next phrase
+                typeSpeed = 500;
+            }
+
+            setTimeout(type, typeSpeed);
         }
 
-        function launchGame(url) {
+        // Initialize
+        window.onload = type;
+
+        function openGame() {
             document.getElementById('game-overlay').style.display = 'block';
-            document.getElementById('game-frame').src = url;
+            document.getElementById('game-frame').src = 'https://basketballstars-game.github.io/game/';
         }
 
         function closeGame() {

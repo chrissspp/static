@@ -1,8 +1,6 @@
-// Load all necessary parts of the engine
 importScripts('https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js');
 importScripts('https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.worker.js');
 
-// Hardcode the config to prevent "prefix undefined" errors
 const scramjet = new ScramjetServiceWorker({
     prefix: '/service/',
     codec: 'xor',
@@ -10,16 +8,15 @@ const scramjet = new ScramjetServiceWorker({
 });
 
 self.addEventListener('fetch', (event) => {
-    // Check if the request is for the proxy
+    // Only handle requests that go through our /service/ prefix
     if (event.request.url.includes('/service/')) {
         event.respondWith(
             (async () => {
                 try {
-                    // Ensure config is loaded before fetching
-                    await scramjet.loadConfig();
+                    // We let the engine handle the fetch directly
                     return await scramjet.fetch(event);
                 } catch (err) {
-                    console.error("Proxy Fetch Error:", err);
+                    console.error("Proxy error:", err);
                     return fetch(event.request);
                 }
             })()

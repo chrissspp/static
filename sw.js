@@ -12,10 +12,10 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             (async () => {
                 try {
-                    // Directly fetch without calling loadConfig
+                    // Bypass broken loadConfig calls
                     return await scramjet.fetch(event);
                 } catch (err) {
-                    console.error("Fetch Error:", err);
+                    console.error("Worker fetch failed:", err);
                     return fetch(event.request);
                 }
             })()

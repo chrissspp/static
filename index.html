@@ -18,7 +18,6 @@
             overflow: hidden; 
         }
 
-        /* --- FADE IN FOR UI --- */
         .fade-in {
             animation: fadeIn 2s ease-in forwards;
             opacity: 0;
@@ -40,13 +39,6 @@
             filter: drop-shadow(0 0 8px var(--accent));
         }
 
-        /* --- FLOATING ANIMATION --- */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
         /* --- HERO --- */
         .hero {
             display: flex;
@@ -62,13 +54,25 @@
             align-items: center;
             height: 6rem;
             margin-bottom: 5px;
-            animation: float 4s ease-in-out infinite;
+            /* Container NO LONGER floats */
         }
 
         #typewriter {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem; font-weight: 700;
             letter-spacing: -3px; text-transform: lowercase;
+            display: flex; /* Key for inline character animation */
+        }
+
+        /* --- INDIVIDUAL CHARACTER FLOAT --- */
+        #typewriter span {
+            display: inline-block;
+            animation: charFloat 2.5s ease-in-out infinite;
+        }
+
+        @keyframes charFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); } /* Stronger move for visibility */
         }
 
         .cursor {
@@ -83,7 +87,7 @@
         .hero p { 
             opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; 
             font-weight: 300; letter-spacing: 4px; text-transform: uppercase;
-            animation: float 5s ease-in-out infinite;
+            /* Simple fade-in only for sub-header now */
         }
 
         .btn-start {
@@ -92,7 +96,6 @@
             font-weight: 700; font-size: 1rem; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.2);
             transition: all 0.4s; text-transform: uppercase; letter-spacing: 5px;
-            animation: float 6s ease-in-out infinite;
         }
 
         .btn-start:hover { 
@@ -138,52 +141,64 @@
     <script>
         const typewriterElement = document.getElementById('typewriter');
         
-        // "welcome to static" is the intro phrase. The rest loop.
         const introPhrase = "welcome to static.";
         const loopPhrases = [
             "access granted.", 
             "unblock the world.", 
             "play without fear.",
-            "the web is yours.", 
             "no restrictions.", 
-            "encryption active.",
-            "freedom is here."
+            "encryption active."
         ];
 
-        let phraseIndex = -1; // Starts at -1 to trigger the intro first
+        let phraseIndex = -1;
         let charIndex = 0;
         let isDeleting = false;
         let typeSpeed = 100;
 
         function type() {
-            // Pick the intro first, then move to loopPhrases
             const currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
 
-            if (isDeleting) {
-                typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--; 
-                typeSpeed = 30; 
+            // --- THE NEW FLOATING INJECTION ---
+            if (!isDeleting) {
+                // When TYPING: Inject spans with staggered delays
+                if (charIndex < currentPhrase.length) {
+                    const char = currentPhrase.charAt(charIndex);
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    
+                    // Stagger: Delays are cumulative based on charIndex
+                    span.style.animationDelay = `${charIndex * 0.05}s`; // Smooth wave
+
+                    typewriterElement.appendChild(span);
+                    charIndex++;
+                    typeSpeed = 70; // Typing speed
+                }
             } else {
-                typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++; 
-                typeSpeed = 70; 
+                // When DELETING: Just remove the last span
+                if (charIndex > 0) {
+                    typewriterElement.removeChild(typewriterElement.lastChild);
+                    charIndex--;
+                    typeSpeed = 30; // Fast delete
+                }
             }
 
-            // Logic for switching phrases
+            // --- Switching Logic (Remains the same) ---
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true; 
-                typeSpeed = 3000; // Pause to let them read "welcome to static"
+                typeSpeed = 3000; // Pause at end of phrase
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 
-                // If we just finished the intro, move to the first loop phrase
+                // Clear any lingering spaces
+                typewriterElement.innerHTML = '';
+                
                 if (phraseIndex === -1) {
                     phraseIndex = 0;
                 } else {
                     phraseIndex = (phraseIndex + 1) % loopPhrases.length;
                 }
                 
-                typeSpeed = 500; 
+                typeSpeed = 500; // Pause before next phrase
             }
 
             setTimeout(type, typeSpeed);

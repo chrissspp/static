@@ -1,5 +1,5 @@
-self.__scramjet$config = {
-    prefix: './service/',
-    codec: 'xor',
-    bare: 'https://bare.duckdns.org/'
+window.__scramjet$config = {
+  prefix: "
+static.christianjprince12.workers.dev/",   // ← your Worker URL
+  encodeUrl: u => btoa(u).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"")
 };

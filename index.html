@@ -4,82 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static | Hub</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
-
     <style>
-        :root { --accent: #a020f0; --bg: #000; }
-        body, html { margin:0; padding:0; background:var(--bg); color:white; font-family:Outfit; overflow:hidden; height:100vh; }
-        .hero { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; }
-
-        .typing-container { display:flex; align-items:center; height:6rem; margin-bottom:20px; }
-        #typewriter { font-family:"Space Grotesk"; font-size:5rem; font-weight:700; min-height:6rem; }
-
-        .rainbow {
-            background: linear-gradient(-90deg,#f00,#fc0,#0f0,#0ff,#00f,#f0f,#f00);
-            -webkit-background-clip:text;
-            color:transparent;
-            animation: rainbowShift 1s linear infinite;
-        }
-
-        @keyframes rainbowShift {
-            0% { background-position:100% 50%; }
-            100% { background-position:0% 50%; }
-        }
-
-        .proxy-wrapper { position:relative; width:550px; margin-top:30px; }
-        .proxy-input {
-            width:100%;
-            padding:18px 25px;
-            border-radius:15px;
-            border:1px solid rgba(255,255,255,0.1);
-            background:rgba(255,255,255,0.05);
-            color:white;
-            font-size:1.1rem;
-            outline:none;
-        }
-
-        .btn-go {
-            position:absolute;
-            right:12px;
-            top:50%;
-            transform:translateY(-50%);
-            background:var(--accent);
-            border:none;
-            padding:10px 20px;
-            border-radius:10px;
-            color:white;
-            font-weight:800;
-            cursor:pointer;
-        }
-
-        #game-overlay {
-            display:none;
-            position:fixed;
-            inset:0;
-            background:black;
-            z-index:9999;
-        }
-
-        iframe { width:100%; height:100%; border:none; }
-
-        .close-btn {
-            position:absolute;
-            bottom:30px;
-            left:50%;
-            transform:translateX(-50%);
-            padding:12px 25px;
-            border:none;
-            font-weight:800;
-            cursor:pointer;
-        }
+        :root{--accent:#a020f0;--bg:#000}
+        body,html{margin:0;padding:0;background:var(--bg);color:#fff;font-family:Outfit;overflow:hidden;height:100vh}
+        .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
+        .typing-container{display:flex;align-items:center;height:6rem;margin-bottom:20px}
+        #typewriter{font-family:"Space Grotesk";font-size:5rem;font-weight:700;min-height:6rem}
+        .rainbow{background:linear-gradient(-90deg,#f00,#fc0,#0f0,#0ff,#00f,#f0f,#f00);-webkit-background-clip:text;color:transparent;animation:rainbowShift 1s linear infinite}
+        @keyframes rainbowShift{0%{background-position:100% 50%}100%{background-position:0% 50%}}
+        .proxy-wrapper{position:relative;width:550px;margin-top:30px}
+        .proxy-input{width:100%;padding:18px 25px;border-radius:15px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:1.1rem;outline:none}
+        .btn-go{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;padding:10px 20px;border-radius:10px;color:#fff;font-weight:800;cursor:pointer}
+        #game-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9999}
+        iframe{width:100%;height:100%;border:none}
+        .close-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);padding:12px 25px;border:none;font-weight:800;cursor:pointer}
     </style>
 </head>
-
 <body>
     <div class="hero">
         <div class="typing-container"><span id="typewriter"></span></div>
-
         <div class="proxy-wrapper">
             <form id="proxy-form">
                 <input id="url-input" class="proxy-input" placeholder="Search freely..." autocomplete="off">
@@ -93,63 +37,43 @@
         <button class="close-btn" onclick="closeGame()">EXIT SESSION</button>
     </div>
 
-    <!-- MUST be local on GitHub Pages -->
+    <!-- 1) CONFIG (plain JS) -->
     <script src="./scramjet.config.js"></script>
 
     <script>
-        // -----------------------------
-        // Service Worker (GitHub safe)
-        // -----------------------------
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', { scope: './' })
-                .then(() => navigator.serviceWorker.ready)
-                .then(() => console.log("Service Worker Ready"))
-                .catch(err => console.error("SW failed:", err));
-        }
-
-        // -----------------------------
-        // Typewriter
-        // -----------------------------
-        window.addEventListener('DOMContentLoaded', () => {
-            const el = document.getElementById('typewriter');
-            const text = "welcome to static.";
-            let i = 0;
-
-            function type() {
-                if (i < text.length) {
-                    const span = document.createElement('span');
-                    if (i >= 11) span.className = "rainbow";
-                    span.textContent = text[i];
-                    el.appendChild(span);
+        /* ---------- typewriter ---------- */
+        window.addEventListener('DOMContentLoaded',()=>{
+            const el=document.getElementById('typewriter');
+            const txt="welcome to static.";
+            let i=0;
+            function type(){
+                if(i<txt.length){
+                    const sp=document.createElement('span');
+                    if(i>=11) sp.className="rainbow";
+                    sp.textContent=txt[i];
+                    el.appendChild(sp);
                     i++;
-                    setTimeout(type, 100);
+                    setTimeout(type,100);
                 }
             }
             type();
         });
 
-        // -----------------------------
-        // Proxy logic
-        // -----------------------------
-        document.getElementById('proxy-form').onsubmit = (e) => {
+        /* ---------- proxy ---------- */
+        document.getElementById('proxy-form').onsubmit=e=>{
             e.preventDefault();
-
-            const val = document.getElementById('url-input').value.trim();
-            if (!val) return;
-
-            const target = val.includes('.')
-                ? (val.startsWith('http') ? val : 'https://' + val)
-                : 'https://www.google.com/search?q=' + encodeURIComponent(val);
-
-            const url = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(target);
-
-            document.getElementById('game-overlay').style.display = 'block';
-            document.getElementById('game-frame').src = url;
+            const val=document.getElementById('url-input').value.trim();
+            if(!val) return;
+            const target=val.includes('.')
+                ?(val.startsWith('http')?val:'https://'+val)
+                :'https://www.google.com/search?q='+encodeURIComponent(val);
+            const url=window.__scramjet$config.prefix+window.__scramjet$config.encodeUrl(target);
+            document.getElementById('game-overlay').style.display='block';
+            document.getElementById('game-frame').src=url;
         };
-
-        function closeGame() {
-            document.getElementById('game-overlay').style.display = 'none';
-            document.getElementById('game-frame').src = '';
+        function closeGame(){
+            document.getElementById('game-overlay').style.display='none';
+            document.getElementById('game-frame').src='';
         }
     </script>
 </body>

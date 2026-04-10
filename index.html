@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space | Hub</title>
+    <title>Static | Hub</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,6 +16,17 @@
             margin: 0; padding: 0; background: var(--bg); 
             color: var(--text-main); font-family: 'Outfit', sans-serif; 
             overflow: hidden; 
+        }
+
+        /* --- FADE IN FOR UI --- */
+        .fade-in {
+            animation: fadeIn 2s ease-in forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         /* --- NAV --- */
@@ -51,7 +62,6 @@
             align-items: center;
             height: 6rem;
             margin-bottom: 5px;
-            /* Applying the float */
             animation: float 4s ease-in-out infinite;
         }
 
@@ -73,7 +83,6 @@
         .hero p { 
             opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; 
             font-weight: 300; letter-spacing: 4px; text-transform: uppercase;
-            /* Slightly different float timing for a natural feel */
             animation: float 5s ease-in-out infinite;
         }
 
@@ -89,7 +98,7 @@
         .btn-start:hover { 
             background: white; color: black;
             box-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
-            transform: translateY(-8px); /* Hover overrides float slightly */
+            transform: translateY(-8px);
         }
 
         /* --- OVERLAY --- */
@@ -105,7 +114,7 @@
 </head>
 <body>
 
-    <nav>
+    <nav class="fade-in">
         <div class="nav-item" onclick="location.reload()">🏠</div>
         <div class="nav-item" onclick="openGame()">🕹️</div>
         <div class="nav-item">📱</div>
@@ -117,8 +126,8 @@
             <span id="typewriter"></span>
             <div class="cursor"></div>
         </div>
-        <p>freedom of the web</p>
-        <button class="btn-start" onclick="openGame()">Enter Void</button>
+        <p class="fade-in">freedom of the web</p>
+        <button class="btn-start fade-in" onclick="openGame()">Enter Void</button>
     </div>
 
     <div id="game-overlay">
@@ -128,32 +137,55 @@
 
     <script>
         const typewriterElement = document.getElementById('typewriter');
-        const phrases = [
-            "access granted.", "unblock the world.", "play without fear.",
-            "the web is yours.", "no restrictions.", "encryption active.",
-            "welcome to space.", "freedom is here."
+        
+        // "welcome to static" is the intro phrase. The rest loop.
+        const introPhrase = "welcome to static.";
+        const loopPhrases = [
+            "access granted.", 
+            "unblock the world.", 
+            "play without fear.",
+            "the web is yours.", 
+            "no restrictions.", 
+            "encryption active.",
+            "freedom is here."
         ];
 
-        let phraseIndex = 0; let charIndex = 0;
-        let isDeleting = false; let typeSpeed = 100;
+        let phraseIndex = -1; // Starts at -1 to trigger the intro first
+        let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 100;
 
         function type() {
-            const currentPhrase = phrases[phraseIndex];
+            // Pick the intro first, then move to loopPhrases
+            const currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
+
             if (isDeleting) {
                 typewriterElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--; typeSpeed = 30; 
+                charIndex--; 
+                typeSpeed = 30; 
             } else {
                 typewriterElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++; typeSpeed = 70; 
+                charIndex++; 
+                typeSpeed = 70; 
             }
 
+            // Logic for switching phrases
             if (!isDeleting && charIndex === currentPhrase.length) {
-                isDeleting = true; typeSpeed = 3000; 
+                isDeleting = true; 
+                typeSpeed = 3000; // Pause to let them read "welcome to static"
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
+                
+                // If we just finished the intro, move to the first loop phrase
+                if (phraseIndex === -1) {
+                    phraseIndex = 0;
+                } else {
+                    phraseIndex = (phraseIndex + 1) % loopPhrases.length;
+                }
+                
                 typeSpeed = 500; 
             }
+
             setTimeout(type, typeSpeed);
         }
 

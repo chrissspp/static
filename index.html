@@ -15,7 +15,7 @@
         .nav-item:hover { opacity: 1; color: var(--accent); transform: scale(1.2); }
         .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 85vh; text-align: center; }
         .typing-container { display: flex; align-items: center; height: 6rem; margin-bottom: 20px; }
-        #typewriter { font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 700; letter-spacing: 2px; text-transform: lowercase; display: flex; flex-wrap: nowrap; }
+        #typewriter { font-family: 'Space Grotesk', sans-serif; font-size: 5rem; font-weight: 700; letter-spacing: 2px; text-transform: lowercase; display: flex; flex-wrap: nowrap; min-height: 6rem; }
         #typewriter span { display: inline-block; min-width: 10px; animation: charFloat 1.2s ease-in-out infinite; }
         #typewriter span.space { width: 1.5rem; }
         #typewriter span.rainbow {
@@ -64,50 +64,86 @@
     </div>
 
     <script>
-    <script src="/scram/scramjet.all.js"></script> <script>
-    // --- 1. NEW SCRAMJET CONFIG ---
-    window.__scramjet$config = {
-        prefix: '/service/',
-        codec: 'xor',
-        // Updated 2026 Bare Server (If this fails, search for "Bare Server links")
-        bare: 'https://bare.benroxy.com/', 
-        encodeUrl: (str) => {
-            if (!str) return str;
-            return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-        }
-    };
+        // --- 1. SCRAMJET CONFIG ---
+        window.__scramjet$config = {
+            prefix: '/service/',
+            codec: 'xor',
+            bare: 'https://bare.benroxy.com/', 
+            encodeUrl: (str) => {
+                if (!str) return str;
+                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            }
+        };
 
-    // --- 2. REGISTRATION ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js', { scope: __scramjet$config.prefix });
-        });
-    }
-
-    // --- 3. THE PROXY GO BUTTON ---
-    const form = document.getElementById('proxy-form');
-    const input = document.getElementById('url-input');
-
-    form.onsubmit = (e) => {
-        e.preventDefault();
-        const url = input.value.trim();
-        if (!url) return;
-
-        document.getElementById('game-overlay').style.display = 'block';
-        
-        let targetUrl = url;
-        if (!url.startsWith('http')) {
-            targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-        } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
-            targetUrl = 'https://' + url;
+        // --- 2. SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: __scramjet$config.prefix });
+            });
         }
 
-        // Use the modern prefix + encoded path
-        const proxiedUrl = __scramjet$config.prefix + __scramjet$config.encodeUrl(targetUrl);
-        document.getElementById('game-frame').src = proxiedUrl;
-    };
+        // --- 3. THE RAINBOW TYPEWRITER (REPLACED/FIXED) ---
+        const typewriterElement = document.getElementById('typewriter');
+        const introPhrase = "welcome to static.";
+        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "encryption active."];
+        let phraseIndex = -1, charIndex = 0, isDeleting = false, typeSpeed = 100;
 
-    // --- [KEEP YOUR RAINBOW TYPING LOGIC HERE] ---
-</script>
+        function type() {
+            let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
+            if (!isDeleting) {
+                if (charIndex < currentPhrase.length) {
+                    const char = currentPhrase.charAt(charIndex);
+                    const span = document.createElement('span');
+                    if (phraseIndex === -1 && charIndex >= 11) {
+                        span.className = "rainbow"; 
+                        if (char === " ") span.className += " space";
+                    } else if (char === " ") { span.className = "space"; }
+                    if (char !== " ") span.textContent = char;
+                    span.style.animationDelay = `${charIndex * 0.05}s`; 
+                    typewriterElement.appendChild(span);
+                    charIndex++; typeSpeed = 40;
+                }
+            } else {
+                if (charIndex > 0) { typewriterElement.removeChild(typewriterElement.lastChild); charIndex--; typeSpeed = 15; }
+            }
+            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; } 
+            else if (isDeleting && charIndex === 0) {
+                isDeleting = false; typewriterElement.innerHTML = '';
+                if (phraseIndex === -1) { phraseIndex = 0; } else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
+                typeSpeed = 200;
+            }
+            setTimeout(type, typeSpeed);
+        }
+
+        // Start typing once page loads
+        window.onload = type;
+
+        // --- 4. PROXY SEARCH LOGIC ---
+        const form = document.getElementById('proxy-form');
+        const input = document.getElementById('url-input');
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            openProxy(input.value.trim());
+        };
+
+        function openProxy(url) {
+            if (!url) return;
+            document.getElementById('game-overlay').style.display = 'block';
+            let targetUrl = url;
+            if (!url.startsWith('http')) {
+                targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            } else if (!(url.startsWith('https://') || url.startsWith('http://'))) {
+                targetUrl = 'https://' + url;
+            }
+            const proxiedUrl = __scramjet$config.prefix + __scramjet$config.encodeUrl(targetUrl);
+            document.getElementById('game-frame').src = proxiedUrl;
+        }
+
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = '';
+        }
+    </script>
 </body>
 </html>

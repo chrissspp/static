@@ -16,13 +16,14 @@
         .fade-in { animation: fadeIn 1s ease-in forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        nav { display: flex; justify-content: center; padding: 30px; gap: 60px; }
+        nav { display: flex; justify-content: center; padding: 30px; gap: 60px; z-index: 10; position: relative; }
         .nav-item { font-size: 1.8rem; cursor: pointer; opacity: 0.3; transition: 0.4s; }
         .nav-item:hover { opacity: 1; color: var(--accent); transform: scale(1.2); }
 
-        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 75vh; text-align: center; }
-        .typing-container { display: flex; align-items: center; height: 6rem; margin-bottom: 5px; }
-
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 85vh; text-align: center; }
+        
+        /* --- TYPING --- */
+        .typing-container { display: flex; align-items: center; height: 6rem; margin-bottom: 20px; }
         #typewriter {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem; font-weight: 700;
@@ -30,71 +31,78 @@
             display: flex; flex-wrap: nowrap;
         }
 
-        #typewriter span {
-            display: inline-block;
-            min-width: 10px;
-            animation: charFloat 1.2s ease-in-out infinite;
-        }
-
+        #typewriter span { display: inline-block; min-width: 10px; animation: charFloat 1.2s ease-in-out infinite; }
         #typewriter span.space { width: 1.5rem; }
 
-        /* --- THE REVERSED RAINBOW (NO FREEZE) --- */
         #typewriter span.rainbow {
-            background-image: linear-gradient(
-                -90deg, 
-                #ff0000, #ffcc00, #00ff00, 
-                #00ffff, #0000ff, #ff00ff, #ff0000
-            );
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            background-size: 200% 100%;
-            /* Constant shift animation */
-            animation: charFloat 1.2s ease-in-out infinite, rainbowShift 0.5s linear infinite;
+            background-image: linear-gradient(-90deg, #ff0000, #ffcc00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            background-size: 200% 100%; animation: charFloat 1.2s ease-in-out infinite, rainbowShift 0.5s linear infinite;
         }
 
-        @keyframes charFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+        @keyframes charFloat { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+        @keyframes rainbowShift { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* --- PROXY SEARCH BAR --- */
+        .proxy-wrapper {
+            position: relative;
+            margin-top: 20px;
+            width: 500px;
+            animation: fadeIn 2s ease-in forwards;
         }
 
-        @keyframes rainbowShift {
-            0% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .proxy-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 12px;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
         }
 
-        .cursor {
-            width: 8px; height: 4.5rem; background-color: var(--accent);
-            margin-left: 20px; border-radius: 2px;
-            animation: blink 0.5s infinite;
-            box-shadow: 0 0 20px var(--accent);
+        .proxy-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(160, 32, 240, 0.2);
+            background: rgba(255, 255, 255, 0.08);
         }
 
+        .btn-go {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-go:hover { transform: translateY(-50%) scale(1.05); box-shadow: 0 0 15px var(--accent); }
+
+        .cursor { width: 8px; height: 4.5rem; background-color: var(--accent); margin-left: 20px; border-radius: 2px; animation: blink 0.5s infinite; box-shadow: 0 0 20px var(--accent); }
         @keyframes blink { 50% { opacity: 0; } }
 
-        .hero p { opacity: 0.4; font-size: 1.2rem; margin-bottom: 45px; letter-spacing: 4px; text-transform: uppercase; }
-
-        .btn-start {
-            background: transparent; color: white; padding: 18px 60px;
-            border-radius: 4px; font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700; font-size: 1rem; cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: 0.4s; text-transform: uppercase; letter-spacing: 5px;
-        }
-
-        .btn-start:hover { background: white; color: black; box-shadow: 0 0 50px rgba(160, 32, 240, 0.4); }
-
+        /* --- OVERLAY --- */
         #game-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 1000; }
         iframe { width: 100%; height: 100%; border: none; }
-        .close-btn { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 10px 30px; border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; }
+        .close-btn { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 10px 30px; border: none; cursor: pointer; font-weight: bold; letter-spacing: 2px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
     <nav class="fade-in">
         <div class="nav-item" onclick="location.reload()">🏠</div>
-        <div class="nav-item" onclick="openGame()">🕹️</div>
-        <div class="nav-item">📱</div>
+        <div class="nav-item" onclick="openProxy('https://google.com')">🔍</div>
+        <div class="nav-item" onclick="openProxy('https://discord.com')">📱</div>
         <div class="nav-item">⚙️</div>
     </nav>
 
@@ -103,74 +111,79 @@
             <span id="typewriter"></span>
             <div class="cursor"></div>
         </div>
-        <p class="fade-in">freedom of the web</p>
-        <button class="btn-start fade-in" onclick="openGame()">Enter Void</button>
+        
+        <div class="proxy-wrapper fade-in">
+            <form id="proxy-form">
+                <input type="text" class="proxy-input" id="url-input" placeholder="Search the web freely..." autocomplete="off">
+                <button type="submit" class="btn-go">GO</button>
+            </form>
+        </div>
     </div>
 
     <div id="game-overlay">
         <iframe id="game-frame" src=""></iframe>
-        <button class="close-btn" onclick="closeGame()">KILL SESSION</button>
+        <button class="close-btn" onclick="closeGame()">EXIT SESSION</button>
     </div>
 
     <script>
         const typewriterElement = document.getElementById('typewriter');
         const introPhrase = "welcome to static.";
-        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "the web is yours.", "encryption active."];
+        const loopPhrases = ["access granted.", "unblock the world.", "play without fear.", "encryption active."];
 
-        let phraseIndex = -1;
-        let charIndex = 0;
-        let isDeleting = false;
-        let typeSpeed = 100;
+        let phraseIndex = -1, charIndex = 0, isDeleting = false, typeSpeed = 100;
 
         function type() {
             let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
-
             if (!isDeleting) {
                 if (charIndex < currentPhrase.length) {
                     const char = currentPhrase.charAt(charIndex);
                     const span = document.createElement('span');
-                    
                     if (phraseIndex === -1 && charIndex >= 11) {
                         span.className = "rainbow"; 
                         if (char === " ") span.className += " space";
-                    } else if (char === " ") {
-                        span.className = "space";
-                    }
-                    
+                    } else if (char === " ") { span.className = "space"; }
                     if (char !== " ") span.textContent = char;
-                    
                     span.style.animationDelay = `${charIndex * 0.05}s`; 
                     typewriterElement.appendChild(span);
-                    charIndex++;
-                    typeSpeed = 40;
+                    charIndex++; typeSpeed = 40;
                 }
             } else {
-                if (charIndex > 0) {
-                    typewriterElement.removeChild(typewriterElement.lastChild);
-                    charIndex--;
-                    typeSpeed = 15;
-                }
+                if (charIndex > 0) { typewriterElement.removeChild(typewriterElement.lastChild); charIndex--; typeSpeed = 15; }
             }
 
-            if (!isDeleting && charIndex === currentPhrase.length) {
-                isDeleting = true; 
-                typeSpeed = 2000; 
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                typewriterElement.innerHTML = '';
-                if (phraseIndex === -1) { phraseIndex = 0; } 
-                else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
+            if (!isDeleting && charIndex === currentPhrase.length) { isDeleting = true; typeSpeed = 2000; } 
+            else if (isDeleting && charIndex === 0) {
+                isDeleting = false; typewriterElement.innerHTML = '';
+                if (phraseIndex === -1) { phraseIndex = 0; } else { phraseIndex = (phraseIndex + 1) % loopPhrases.length; }
                 typeSpeed = 200;
             }
-
             setTimeout(type, typeSpeed);
         }
 
         window.onload = type;
 
-        function openGame() {
+        // --- PROXY HANDLER ---
+        const form = document.getElementById('proxy-form');
+        const input = document.getElementById('url-input');
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            const url = input.value;
+            // Using a public Ultraviolet/Corrosion link as a placeholder
+            // Replace with your own logic/endpoint
+            openProxy(url);
+        };
+
+        function openProxy(url) {
             document.getElementById('game-overlay').style.display = 'block';
-            document.getElementById('game-frame').src = 'https://basketballstars-game.github.io/game/';
+            // We'll use a search engine logic: if it's not a URL, search it on Google
+            let targetUrl = url;
+            if (!url.startsWith('http')) {
+                targetUrl = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            }
+            // For a TRUE proxy, you'd prepend your proxy URL here:
+            // e.g., 'https://my-proxy-instance.com/service/' + targetUrl
+            document.getElementById('game-frame').src = targetUrl;
         }
 
         function closeGame() {

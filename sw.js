@@ -9,6 +9,16 @@ const scramjet = new ScramjetServiceWorker({
 
 self.addEventListener('fetch', (event) => {
     if (event.request.url.includes('/service/')) {
-        event.respondWith(scramjet.fetch(event));
+        event.respondWith(
+            (async () => {
+                try {
+                    // Directly fetch without calling loadConfig
+                    return await scramjet.fetch(event);
+                } catch (err) {
+                    console.error("Fetch Error:", err);
+                    return fetch(event.request);
+                }
+            })()
+        );
     }
 });

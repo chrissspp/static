@@ -44,7 +44,7 @@
         #typewriter {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 5rem; font-weight: 700;
-            letter-spacing: 2px; /* Added spacing between letters */
+            letter-spacing: 2px;
             text-transform: lowercase;
             display: flex;
             flex-wrap: nowrap;
@@ -53,18 +53,39 @@
         /* --- CHARACTER STYLE & FLOAT --- */
         #typewriter span {
             display: inline-block;
-            min-width: 10px; /* Ensures letters don't touch */
+            min-width: 10px;
             animation: charFloat 2.5s ease-in-out infinite;
         }
 
-        /* Dedicated style for spaces to keep words separate */
         #typewriter span.space {
-            width: 1.5rem; /* The width of the gap between words */
+            width: 1.5rem;
+        }
+
+        /* --- THE RAINBOW FIX --- */
+        #typewriter span.rainbow {
+            /* Basic gradient setup */
+            background-image: linear-gradient(
+                90deg, 
+                #ff0055, #ffcc00, #33ff00, 
+                #00ffee, #a020f0, #ff0055
+            );
+            /* Clipping standard required for gradient text */
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent; /* Makes the original letter transparent so gradient shows */
+            background-size: 300% 100%; /* Wider so it can shift */
+            animation: charFloat 2.5s ease-in-out infinite, rainbowShift 6s linear infinite;
         }
 
         @keyframes charFloat {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
+        }
+
+        /* Shifts the background gradient endlessly */
+        @keyframes rainbowShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
 
         .cursor {
@@ -119,7 +140,8 @@
     <script>
         const typewriterElement = document.getElementById('typewriter');
         
-        const introPhrase = "welcome to static.";
+        // Split the intro phrase so we can track word boundaries
+        const introWords = ["welcome", " ", "to", " ", "static."];
         const loopPhrases = [
             "access granted.", 
             "unblock the world.", 
@@ -132,22 +154,47 @@
         let charIndex = 0;
         let isDeleting = false;
         let typeSpeed = 100;
+        let globalCharCount = 0; // Tracks position within the phrase for wave
 
         function type() {
-            const currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
+            // Pick either the intro or a loop phrase
+            let currentPhrase;
+            if (phraseIndex === -1) {
+                currentPhrase = introWords.join(''); // "welcome to static."
+            } else {
+                currentPhrase = loopPhrases[phraseIndex];
+            }
 
             if (!isDeleting) {
                 if (charIndex < currentPhrase.length) {
                     const char = currentPhrase.charAt(charIndex);
                     const span = document.createElement('span');
                     
-                    // If the character is a space, add the "space" class
-                    if (char === " ") {
-                        span.className = "space";
+                    // --- THE RAINBOW LOGIC ---
+                    if (phraseIndex === -1) {
+                        // We are in the "welcome to static." intro
+                        // Check if the current charIndex falls inside the last word "static."
+                        // Length of "welcome to " is 11, "static." starts at 11
+                        if (charIndex >= 11) {
+                            span.className = "rainbow"; // Apply rainbow class
+                        }
+                        
+                        // Handle space detection in intro
+                        if (char === " ") {
+                            span.className = (charIndex >= 11 ? "space rainbow" : "space");
+                        } else {
+                            span.textContent = char;
+                        }
                     } else {
-                        span.textContent = char;
+                        // Loop phrases stay white, just do space detection
+                        if (char === " ") {
+                            span.className = "space";
+                        } else {
+                            span.textContent = char;
+                        }
                     }
                     
+                    // Wave staggered delay
                     span.style.animationDelay = `${charIndex * 0.08}s`; 
                     typewriterElement.appendChild(span);
                     charIndex++;
@@ -161,6 +208,7 @@
                 }
             }
 
+            // Switching Logic (unchanged)
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true; 
                 typeSpeed = 3000; 

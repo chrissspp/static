@@ -54,27 +54,27 @@
         #typewriter span {
             display: inline-block;
             min-width: 10px;
-            animation: charFloat 2.5s ease-in-out infinite;
+            /* Faster float to match the fast rainbow */
+            animation: charFloat 2s ease-in-out infinite;
         }
 
         #typewriter span.space {
             width: 1.5rem;
         }
 
-        /* --- THE RAINBOW FIX --- */
+        /* --- FAST RAINBOW --- */
         #typewriter span.rainbow {
-            /* Basic gradient setup */
             background-image: linear-gradient(
                 90deg, 
                 #ff0055, #ffcc00, #33ff00, 
                 #00ffee, #a020f0, #ff0055
             );
-            /* Clipping standard required for gradient text */
             -webkit-background-clip: text;
             background-clip: text;
-            color: transparent; /* Makes the original letter transparent so gradient shows */
-            background-size: 300% 100%; /* Wider so it can shift */
-            animation: charFloat 2.5s ease-in-out infinite, rainbowShift 6s linear infinite;
+            color: transparent;
+            background-size: 300% 100%;
+            /* 1.5s is the "Fast" setting */
+            animation: charFloat 2s ease-in-out infinite, rainbowShift 1.5s linear infinite;
         }
 
         @keyframes charFloat {
@@ -82,7 +82,7 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* Shifts the background gradient endlessly */
+        /* Shifts the background gradient rapidly */
         @keyframes rainbowShift {
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
@@ -140,8 +140,7 @@
     <script>
         const typewriterElement = document.getElementById('typewriter');
         
-        // Split the intro phrase so we can track word boundaries
-        const introWords = ["welcome", " ", "to", " ", "static."];
+        const introPhrase = "welcome to static.";
         const loopPhrases = [
             "access granted.", 
             "unblock the world.", 
@@ -154,47 +153,24 @@
         let charIndex = 0;
         let isDeleting = false;
         let typeSpeed = 100;
-        let globalCharCount = 0; // Tracks position within the phrase for wave
 
         function type() {
-            // Pick either the intro or a loop phrase
-            let currentPhrase;
-            if (phraseIndex === -1) {
-                currentPhrase = introWords.join(''); // "welcome to static."
-            } else {
-                currentPhrase = loopPhrases[phraseIndex];
-            }
+            let currentPhrase = (phraseIndex === -1) ? introPhrase : loopPhrases[phraseIndex];
 
             if (!isDeleting) {
                 if (charIndex < currentPhrase.length) {
                     const char = currentPhrase.charAt(charIndex);
                     const span = document.createElement('span');
                     
-                    // --- THE RAINBOW LOGIC ---
-                    if (phraseIndex === -1) {
-                        // We are in the "welcome to static." intro
-                        // Check if the current charIndex falls inside the last word "static."
-                        // Length of "welcome to " is 11, "static." starts at 11
-                        if (charIndex >= 11) {
-                            span.className = "rainbow"; // Apply rainbow class
-                        }
-                        
-                        // Handle space detection in intro
-                        if (char === " ") {
-                            span.className = (charIndex >= 11 ? "space rainbow" : "space");
-                        } else {
-                            span.textContent = char;
-                        }
-                    } else {
-                        // Loop phrases stay white, just do space detection
-                        if (char === " ") {
-                            span.className = "space";
-                        } else {
-                            span.textContent = char;
-                        }
+                    if (phraseIndex === -1 && charIndex >= 11) {
+                        span.className = "rainbow"; 
+                        if (char === " ") span.className += " space";
+                    } else if (char === " ") {
+                        span.className = "space";
                     }
                     
-                    // Wave staggered delay
+                    if (char !== " ") span.textContent = char;
+                    
                     span.style.animationDelay = `${charIndex * 0.08}s`; 
                     typewriterElement.appendChild(span);
                     charIndex++;
@@ -208,7 +184,6 @@
                 }
             }
 
-            // Switching Logic (unchanged)
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true; 
                 typeSpeed = 3000; 

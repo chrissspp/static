@@ -57,10 +57,11 @@
             font-size: 4.5rem;
             font-weight: 900;
             margin: 0;
-            display: flex; /* Keeps the floating letters in a row */
+            display: flex;
+            align-items: baseline;
         }
 
-        /* Floating Animation for individual letters */
+        /* Floating Animation */
         .floating-letter {
             display: inline-block;
             color: var(--accent-purple);
@@ -114,7 +115,7 @@
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
     </div>
 
     <div class="container">
@@ -130,7 +131,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
         const textElement = document.getElementById('typewriter');
-        const phrases = ["static", "unblocked", "freedom"];
+        // Added a period to the end of each phrase string
+        const phrases = ["static.", "unblocked.", "freedom."];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -144,19 +146,17 @@
                 charIndex++;
             }
 
-            // This part creates the "Individual Floating" letters
             let htmlContent = "";
             for (let i = 0; i < charIndex; i++) {
-                // We add a 0.1s delay for each letter so they bob one after another
                 htmlContent += `<span class="floating-letter" style="animation-delay: ${i * 0.1}s">${currentPhrase[i]}</span>`;
             }
             textElement.innerHTML = htmlContent;
 
-            let typeSpeed = isDeleting ? 80 : 150;
+            let typeSpeed = isDeleting ? 60 : 120;
 
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2500; // Wait longer so the user sees them floating
+                typeSpeed = 2500; // Pause while the word (and period) floats
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
@@ -165,13 +165,16 @@
             setTimeout(typeLoop, typeSpeed);
         }
 
-        // Proxy Logic
         function launchProxy() {
             const input = document.getElementById('url-input').value.trim();
             if (!input) return;
             let url = input.includes('.') && !input.includes(' ') ? input : 'https://www.google.com/search?q=' + encodeURIComponent(input);
             if (!url.startsWith('http')) url = 'https://' + url;
-            window.location.href = '/service/' + btoa(url); // Ensure sw.js is present!
+            
+            // Using the XOR encoding for the proxy launch
+            const prefix = '/service/';
+            const encoded = prefix + encodeURIComponent(url.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            window.location.href = encoded;
         }
 
         window.addEventListener('DOMContentLoaded', () => {

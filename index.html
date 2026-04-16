@@ -1,29 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Static | Home</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
-    <style>
-        body { margin: 0; display: flex; background: #050505; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
-        .sidebar { width: 80px; background: rgba(15, 15, 20, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 40px; }
-        .sidebar i { font-size: 1.8rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .active { color: #7c3aed; }
-        .main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle, #1e1b4b 0%, #050505 100%); }
-        h1 { font-size: 5rem; margin: 0; background: linear-gradient(to right, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .search { margin-top: 30px; width: 500px; padding: 15px 25px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); color: white; outline: none; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
+  <title id="t">Home</title>
+  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
+  <link rel="stylesheet" href="/assets/css/h.css?v=01" />
+  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
+    crossorigin="anonymous"></script>
 </head>
-<body>
-    <div class="sidebar">
-        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear"></i>
-    </div>
+
+<body class="center" onload="SplashT">
+  <div class="f-nav"></div>
+  <div id="particles-js">
+    <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
     <div class="main">
-        <h1>Static</h1>
-        <input type="text" class="search" placeholder="Search Google or type a URL...">
+      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#116;&#101;&#108;&#108;&#97;&#114;</h1>
+      <p id="splash"></p>
+      <div class="search-container">
+        <form id="fv" method="POST">
+          <input id="input" class="truncate" placeholder="Search or enter a URL" type="text" />
+        </form>
+      </div>
     </div>
+  </div>
+  <script src="assets/js/index-3.js"></script>
+  <script src="/assets/js/h1.js"></script>
+  <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
+  <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
+  <script src="/assets/js/m1.js"></script>
+  <!-- DO NOT REMOVE-->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || []
+    function gtag() {
+      dataLayer.push(arguments)
+    }
+    gtag("js", new Date())
+
+    gtag("config", "G-WKJQ5QHQTJ")
+  </script>
+  <!-- DO NOT REMOVE-->
 </body>
+
 </html>

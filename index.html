@@ -26,7 +26,7 @@
             overflow: hidden;
         }
 
-        /* Sidebar Navigation */
+        /* Sidebar */
         .sidebar {
             width: 75px;
             background: var(--sidebar-bg);
@@ -40,20 +40,10 @@
             z-index: 100;
         }
 
-        .sidebar i {
-            font-size: 1.6rem;
-            color: #555;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+        .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent-purple); text-shadow: 0 0 15px var(--accent-purple); }
 
-        .sidebar i:hover, .sidebar i.active {
-            color: var(--accent-purple);
-            text-shadow: 0 0 15px var(--accent-purple);
-            transform: scale(1.1);
-        }
-
-        /* Main Welcome Container */
+        /* Main Container */
         .container {
             flex-grow: 1;
             display: flex;
@@ -67,30 +57,24 @@
             font-size: 4.5rem;
             font-weight: 900;
             margin: 0;
-            letter-spacing: -1px;
+            display: flex; /* Keeps the floating letters in a row */
         }
 
-        /* Typewriter Styling */
-        #typewriter {
+        /* Floating Animation for individual letters */
+        .floating-letter {
+            display: inline-block;
             color: var(--accent-purple);
-            border-right: 3px solid var(--accent-purple);
-            padding-right: 8px;
-            animation: blink 0.7s infinite;
+            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes blink {
-            0%, 100% { border-color: transparent; }
-            50% { border-color: var(--accent-purple); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
-        .tagline {
-            font-size: 1.1rem;
-            margin-top: 15px;
-            opacity: 0.6;
-            letter-spacing: 1px;
-        }
+        .tagline { margin-top: 15px; opacity: 0.6; letter-spacing: 1px; }
 
-        /* Search / Proxy Box */
+        /* Search Box */
         .search-box {
             margin-top: 40px;
             width: 100%;
@@ -108,7 +92,6 @@
             color: white;
             font-size: 1.1rem;
             outline: none;
-            transition: 0.4s;
         }
 
         .go-btn {
@@ -131,11 +114,11 @@
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
+        <i class="fa-solid fa-gear"></i>
     </div>
 
     <div class="container">
-        <h1>Welcome to <span id="typewriter"></span></h1>
+        <h1>Welcome to&nbsp;<span id="typewriter"></span></h1>
         <p class="tagline">Start your unblocking journey today!</p>
         
         <div class="search-box">
@@ -146,29 +129,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
-        // 1. Looping Typewriter Logic
         const textElement = document.getElementById('typewriter');
-        const phrases = ["static", "unblocked", "the web", "freedom"];
+        const phrases = ["static", "unblocked", "freedom"];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
-        let typeSpeed = 150;
 
         function typeLoop() {
             const currentPhrase = phrases[phraseIndex];
+            
             if (isDeleting) {
-                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
                 charIndex--;
-                typeSpeed = 80;
             } else {
-                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
                 charIndex++;
-                typeSpeed = 150;
             }
+
+            // This part creates the "Individual Floating" letters
+            let htmlContent = "";
+            for (let i = 0; i < charIndex; i++) {
+                // We add a 0.1s delay for each letter so they bob one after another
+                htmlContent += `<span class="floating-letter" style="animation-delay: ${i * 0.1}s">${currentPhrase[i]}</span>`;
+            }
+            textElement.innerHTML = htmlContent;
+
+            let typeSpeed = isDeleting ? 80 : 150;
 
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2000; // Pause at end
+                typeSpeed = 2500; // Wait longer so the user sees them floating
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
@@ -177,25 +165,15 @@
             setTimeout(typeLoop, typeSpeed);
         }
 
-        // 2. Proxy Logic
-        window.__scramjet$config = {
-            prefix: '/service/',
-            codec: 'xor',
-            encodeUrl: (str) => {
-                if (!str) return str;
-                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-            }
-        };
-
+        // Proxy Logic
         function launchProxy() {
             const input = document.getElementById('url-input').value.trim();
             if (!input) return;
             let url = input.includes('.') && !input.includes(' ') ? input : 'https://www.google.com/search?q=' + encodeURIComponent(input);
             if (!url.startsWith('http')) url = 'https://' + url;
-            window.location.href = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
+            window.location.href = '/service/' + btoa(url); // Ensure sw.js is present!
         }
 
-        // Initialize
         window.addEventListener('DOMContentLoaded', () => {
             typeLoop();
             if ('serviceWorker' in navigator) {

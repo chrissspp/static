@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Welcome</title>
+    <title>Static | Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
@@ -44,7 +44,7 @@
             font-size: 1.6rem;
             color: #555;
             cursor: pointer;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s;
         }
 
         .sidebar i:hover, .sidebar i.active {
@@ -54,13 +54,12 @@
         }
 
         /* Main Welcome Container */
-        .main-container {
+        .container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
@@ -112,12 +111,6 @@
             transition: 0.4s;
         }
 
-        .search-box input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
-            background: rgba(255, 255, 255, 0.08);
-        }
-
         .go-btn {
             position: absolute;
             right: 12px;
@@ -130,12 +123,6 @@
             border-radius: 30px;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .go-btn:hover {
-            transform: translateY(-50%) scale(1.05);
-            filter: brightness(1.1);
         }
     </style>
 </head>
@@ -144,36 +131,53 @@
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-compass"></i>
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
     </div>
 
-    <div class="main-container">
+    <div class="container">
         <h1>Welcome to <span id="typewriter"></span></h1>
         <p class="tagline">Start your unblocking journey today!</p>
         
         <div class="search-box">
-            <input type="text" id="proxy-input" placeholder="Search Google or enter a URL...">
+            <input type="text" id="url-input" placeholder="Search Google or enter a URL...">
             <button class="go-btn" onclick="launchProxy()">Get Started</button>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
-        // 1. Typewriter Effect Logic
+        // 1. Looping Typewriter Logic
         const textElement = document.getElementById('typewriter');
-        const phrase = "static";
+        const phrases = ["static", "unblocked", "the web", "freedom"];
+        let phraseIndex = 0;
         let charIndex = 0;
+        let isDeleting = false;
+        let typeSpeed = 150;
 
-        function type() {
-            if (charIndex < phrase.length) {
-                textElement.textContent += phrase.charAt(charIndex);
+        function typeLoop() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                textElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 80;
+            } else {
+                textElement.textContent = currentPhrase.substring(0, charIndex + 1);
                 charIndex++;
-                setTimeout(type, 180);
+                typeSpeed = 150;
             }
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typeSpeed = 500;
+            }
+            setTimeout(typeLoop, typeSpeed);
         }
 
-        // 2. Scramjet Proxy Logic
+        // 2. Proxy Logic
         window.__scramjet$config = {
             prefix: '/service/',
             codec: 'xor',
@@ -184,33 +188,19 @@
         };
 
         function launchProxy() {
-            const input = document.getElementById('proxy-input').value.trim();
+            const input = document.getElementById('url-input').value.trim();
             if (!input) return;
-
-            let url = input;
-            if (!url.includes('.') || url.includes(' ')) {
-                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
-            }
-
-            const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
-            window.location.href = encoded;
+            let url = input.includes('.') && !input.includes(' ') ? input : 'https://www.google.com/search?q=' + encodeURIComponent(input);
+            if (!url.startsWith('http')) url = 'https://' + url;
+            window.location.href = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
         }
 
-        // Start everything on load
+        // Initialize
         window.addEventListener('DOMContentLoaded', () => {
-            type();
-            
-            // Register Service Worker
+            typeLoop();
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
             }
-        });
-
-        // Allow 'Enter' key to search
-        document.getElementById('proxy-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') launchProxy();
         });
     </script>
 </body>

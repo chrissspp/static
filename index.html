@@ -4,94 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static | Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #050505;
             --accent-purple: #7c3aed;
-            --accent-pink: #d946ef;
-            --sidebar-bg: rgba(15, 15, 20, 0.8);
+            --sidebar-bg: rgba(15, 15, 20, 0.9);
         }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            background-image: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #050505 100%);
+            background: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%);
             color: white;
             height: 100vh;
             display: flex;
             overflow: hidden;
         }
 
-        /* Sidebar Navigation */
+        /* Sidebar Styles */
         .sidebar {
-            width: 70px;
+            width: 80px;
             background: var(--sidebar-bg);
-            backdrop-filter: blur(15px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
-            gap: 30px;
+            padding-top: 30px;
+            gap: 40px;
             z-index: 100;
         }
 
         .sidebar i {
-            font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: 0.3s;
         }
 
-        .sidebar i:hover, .sidebar i.active {
+        .sidebar i:hover {
             color: var(--accent-purple);
-            text-shadow: 0 0 10px var(--accent-purple);
+            transform: scale(1.1);
         }
 
+        .active { color: var(--accent-purple) !important; }
+
         /* Main Content */
-        .main-container {
+        .container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            position: relative;
-        }
-
-        /* Animated Stars Background */
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
-            pointer-events: none;
+            text-align: center;
         }
 
         h1 {
-            font-size: 4.5rem;
-            font-weight: 900;
+            font-size: 5rem;
             margin: 0;
-            background: linear-gradient(to right, #fff, #a78bfa);
+            background: linear-gradient(to right, #ffffff, #a78bfa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .tagline {
-            font-size: 1.2rem;
-            margin-bottom: 40px;
-            opacity: 0.8;
-            letter-spacing: 2px;
-        }
-
-        /* Search / URL Bar */
         .search-box {
-            width: 100%;
-            max-width: 600px;
+            margin-top: 30px;
+            width: 500px;
             position: relative;
         }
 
@@ -101,82 +81,27 @@
             border-radius: 50px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
             color: white;
-            font-size: 1.1rem;
             outline: none;
-            transition: 0.3s;
-        }
-
-        .search-box input:focus {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
-        }
-
-        .go-btn {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(45deg, var(--accent-purple), var(--accent-pink));
-            border: none;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-   <div class="sidebar">
-    <i class="fa-solid fa-house" onclick="window.location.href='index.html'"></i>
-    
-    <i class="fa-solid fa-gamepad" onclick="window.location.href='games.html'"></i>
-    
-    <i class="fa-solid fa-compass" onclick="window.location.href='explore.html'"></i>
-    
-    <i class="fa-solid fa-gear" onclick="window.location.href='settings.html'"></i>
-</div>
+    <div class="sidebar">
+        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-gear"></i>
+    </div>
 
-    <div class="main-container">
-        <div class="stars"></div>
-        
+    <div class="container">
         <h1>Static</h1>
-        <div class="tagline">START YOUR UNBLOCKING JOURNEY TODAY</div>
-
+        <p style="letter-spacing: 3px; opacity: 0.6;">START YOUR JOURNEY</p>
+        
         <div class="search-box">
-            <input type="text" id="search-input" placeholder="Search Google or type a URL">
-            <button class="go-btn" onclick="proxySearch()">GET STARTED</button>
+            <input type="text" placeholder="Enter URL or Search...">
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
-    <script>
-        // Scramjet Proxy Logic
-        window.__scramjet$config = {
-            prefix: '/service/',
-            codec: 'xor',
-            encodeUrl: (str) => {
-                if (!str) return str;
-                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-            }
-        };
-
-        function proxySearch() {
-            const input = document.getElementById('search-input').value;
-            let url = input.trim();
-            
-            if (!url.includes('.') || url.includes(' ')) {
-                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
-            } else if (!url.startsWith('http')) {
-                url = 'https://' + url;
-            }
-
-            const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
-            window.location.href = encoded;
-        }
-    </script>
 </body>
 </html>

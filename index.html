@@ -1,52 +1,105 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
-  <title id="t">Home</title>
-  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/h.css?v=01" />
-  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
-    crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <title>Static | Welcome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            background: #050505;
+            background-image: radial-gradient(circle at 50% 80%, #2e1065 0%, #050505 70%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 70px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 30px;
+        }
+
+        .sidebar i { font-size: 1.5rem; color: #666; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .active { color: #a855f7; text-shadow: 0 0 10px #a855f7; }
+
+        /* Main Welcome Content */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+            font-weight: 900;
+        }
+
+        h1 span { color: #a855f7; }
+
+        .search-container {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            outline: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-go {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #a855f7;
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
+<body>
 
-<body class="center" onload="SplashT">
-  <div class="f-nav"></div>
-  <div id="particles-js">
-    <script rel="preload" src="https://cdn.jsdelivr.net/particles.js/2.0.0/"></script>
-    <div class="main">
-      <h1 class="title">&#73;&#110;&#116;&#101;&#114;&#115;&#116;&#101;&#108;&#108;&#97;&#114;</h1>
-      <p id="splash"></p>
-      <div class="search-container">
-        <form id="fv" method="POST">
-          <input id="input" class="truncate" placeholder="Search or enter a URL" type="text" />
-        </form>
-      </div>
+    <div class="sidebar">
+        <i class="fa-solid fa-house active"></i>
+        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-gear"></i>
     </div>
-  </div>
-  <script src="assets/js/index-3.js"></script>
-  <script src="/assets/js/h1.js"></script>
-  <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
-  <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
-  <script src="/assets/js/m1.js"></script>
-  <!-- DO NOT REMOVE-->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
-  <script>
-    window.dataLayer = window.dataLayer || []
-    function gtag() {
-      dataLayer.push(arguments)
-    }
-    gtag("js", new Date())
 
-    gtag("config", "G-WKJQ5QHQTJ")
-  </script>
-  <!-- DO NOT REMOVE-->
+    <div class="container">
+        <h1>Welcome to <span>static</span></h1>
+        <p style="opacity: 0.6; letter-spacing: 1px;">Start your unblocking journey today!</p>
+        
+        <div class="search-container">
+            <input type="text" placeholder="Search Google or type a URL">
+            <button class="btn-go">Get Started</button>
+        </div>
+    </div>
+
 </body>
-
 </html>

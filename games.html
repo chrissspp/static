@@ -4,33 +4,134 @@
     <meta charset="UTF-8">
     <title>Static | Games</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; display: flex; background: #050505; color: white; font-family: 'Inter', sans-serif; height: 100vh; }
-        .sidebar { width: 80px; background: rgba(15, 15, 20, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding-top: 30px; gap: 40px; }
-        .sidebar i { font-size: 1.8rem; color: rgba(255, 255, 255, 0.5); cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .active { color: #7c3aed; }
-        .content { flex-grow: 1; padding: 50px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #7c3aed; box-shadow: 0 0 20px rgba(124, 58, 237, 0.2); }
-        .card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        :root {
+            --bg-dark: #050505;
+            --accent-purple: #7c3aed;
+            --sidebar-bg: rgba(15, 15, 20, 0.9);
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%);
+            font-family: 'Inter', sans-serif;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 80px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            gap: 40px;
+        }
+
+        .sidebar i {
+            font-size: 1.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar i:hover, .active {
+            color: var(--accent-purple);
+            text-shadow: 0 0 10px var(--accent-purple);
+        }
+
+        /* Games Grid Area */
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 25px rgba(124, 58, 237, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
+
     <div class="sidebar">
         <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad active" onclick="location.href='games.html'"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
+
     <div class="content">
-        <h1>Games</h1>
+        <h1>Games Library</h1>
+        
         <div class="grid">
-            <div class="card" onclick="alert('Launching Game...')">
-                <img src="./imgs/duck.webp">
-                <h3>Sample Game</h3>
+            <div class="card" onclick="launchGame('https://example-game-link.com')">
+                <img src="./imgs/duck.webp" alt="Duck Game">
+                <h3>Duck Life</h3>
             </div>
-        </div>
+
+            <div class="card" onclick="launchGame('https://another-game.com')">
+                <img src="./imgs/snake.png" alt="Snake">
+                <h3>Retro Snake</h3>
+            </div>
+
+            </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
+    <script>
+        // Use the Scramjet prefix to prevent 404s
+        function launchGame(url) {
+            const prefix = '/service/';
+            const encoded = prefix + encodeURIComponent(url.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            window.location.href = encoded;
+        }
+    </script>
 </body>
 </html>

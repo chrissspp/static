@@ -3,77 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;800&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <title>Static | Games</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700&subset=latin" rel="stylesheet">
     <style>
-        :root{--accent:#a020f0;--bg:#000}
-        body,html{margin:0;padding:0;background:var(--bg);color:#fff;font-family:Outfit;overflow:hidden;height:100vh}
-        .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
-        .typing-container{display:flex;align-items:center;height:6rem;margin-bottom:20px}
-        #typewriter{font-family:"Space Grotesk";font-size:5rem;font-weight:700;min-height:6rem}
-        .rainbow{background:linear-gradient(-90deg,#f00,#fc0,#0f0,#0ff,#00f,#f0f,#f00);-webkit-background-clip:text;color:transparent;animation:rainbowShift 1s linear infinite}
-        @keyframes rainbowShift{0%{background-position:100% 50%}100%{background-position:0% 50%}}
-        .proxy-wrapper{position:relative;width:550px;margin-top:30px}
-        .proxy-input{width:100%;padding:18px 25px;border-radius:15px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:1.1rem;outline:none}
-        .btn-go{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;padding:10px 20px;border-radius:10px;color:#fff;font-weight:800;cursor:pointer}
-        #game-overlay{display:none;position:fixed;inset:0;background:#000;z-index:9999}
-        iframe{width:100%;height:100%;border:none}
-        .close-btn{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);padding:12px 25px;border:none;font-weight:800;cursor:pointer}
+        :root {
+            --bg-primary: #87dc83; /* Duck site green */
+            --accent-green: #4a9d4f;
+            --text-dark: #2e4a2d;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 50px 20px;
+        }
+
+        #typewriter {
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 0;
+            min-height: 4.5rem;
+        }
+
+        /* The Games Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+            padding: 20px 50px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background: var(--card-bg);
+            border: 3px solid var(--accent-green);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0px var(--accent-green); /* Quizlet-style shadow */
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 0px var(--accent-green);
+        }
+
+        .game-card:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 0px var(--accent-green);
+        }
+
+        .game-card img {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 12px;
+            background: #f0f0f0;
+        }
+
+        .game-card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Proxy Session Overlay */
+        #game-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 10000;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ef5350;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 900;
+            cursor: pointer;
+            z-index: 10001;
+        }
     </style>
 </head>
 <body>
-    <div class="hero">
-        <div class="typing-container"><span id="typewriter"></span></div>
-        <div class="proxy-wrapper">
-            <form id="proxy-form">
-                <input id="url-input" class="proxy-input" placeholder="Search freely..." autocomplete="off">
-                <button class="btn-go">GO</button>
-            </form>
-        </div>
+
+    <div class="header">
+        <h1 id="typewriter"></h1>
     </div>
+
+    <div class="game-grid">
+        
+        <div class="game-card" onclick="launchGame('https://example.com/game1')">
+            <img src="./imgs/duck.webp" alt="Game Icon">
+            <h3>Game Name 1</h3>
+        </div>
+
+        <div class="game-card" onclick="launchGame('https://example.com/game2')">
+            <img src="./imgs/duck.webp" alt="Game Icon">
+            <h3>Game Name 2</h3>
+        </div>
+
+        </div>
 
     <div id="game-overlay">
+        <button class="close-btn" onclick="closeGame()">EXIT GAME</button>
         <iframe id="game-frame"></iframe>
-        <button class="close-btn" onclick="closeGame()">EXIT SESSION</button>
     </div>
 
-    <!-- 1) CONFIG (plain JS) -->
-    <script src="./scramjet.config.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
-        /* ---------- typewriter ---------- */
-        window.addEventListener('DOMContentLoaded',()=>{
-            const el=document.getElementById('typewriter');
-            const txt="welcome to static.";
-            let i=0;
-            function type(){
-                if(i<txt.length){
-                    const sp=document.createElement('span');
-                    if(i>=11) sp.className="rainbow";
-                    sp.textContent=txt[i];
-                    el.appendChild(sp);
+        // Scramjet Logic
+        window.__scramjet$config = {
+            prefix: '/service/',
+            codec: 'xor',
+            encodeUrl: (str) => {
+                if (!str) return str;
+                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            }
+        };
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
+        }
+
+        // Typewriter Fix (waits for content to load)
+        window.addEventListener('DOMContentLoaded', () => {
+            const typewriter = document.getElementById('typewriter');
+            const phrase = "welcome to static.";
+            let i = 0;
+            function type() {
+                if (i < phrase.length) {
+                    typewriter.textContent += phrase[i];
                     i++;
-                    setTimeout(type,100);
+                    setTimeout(type, 100);
                 }
             }
             type();
         });
 
-        /* ---------- proxy ---------- */
-        document.getElementById('proxy-form').onsubmit=e=>{
-            e.preventDefault();
-            const val=document.getElementById('url-input').value.trim();
-            if(!val) return;
-            const target=val.includes('.')
-                ?(val.startsWith('http')?val:'https://'+val)
-                :'https://www.google.com/search?q='+encodeURIComponent(val);
-            const url=window.__scramjet$config.prefix+window.__scramjet$config.encodeUrl(target);
-            document.getElementById('game-overlay').style.display='block';
-            document.getElementById('game-frame').src=url;
-        };
-        function closeGame(){
-            document.getElementById('game-overlay').style.display='none';
-            document.getElementById('game-frame').src='';
+        // Launch Game Function
+        function launchGame(url) {
+            const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
+            document.getElementById('game-overlay').style.display = 'block';
+            document.getElementById('game-frame').src = encoded;
+        }
+
+        function closeGame() {
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('game-frame').src = '';
         }
     </script>
 </body>

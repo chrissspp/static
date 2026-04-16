@@ -2,15 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static | Welcome</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --bg-dark: #050505;
+            --accent-purple: #a855f7;
+            --sidebar-bg: rgba(10, 10, 10, 0.8);
+        }
+
         body {
             margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
             background: #050505;
             background-image: radial-gradient(circle at 50% 80%, #2e1065 0%, #050505 70%);
             color: white;
-            font-family: 'Inter', sans-serif;
             height: 100vh;
             display: flex;
             overflow: hidden;
@@ -18,88 +28,190 @@
 
         /* Sidebar Navigation */
         .sidebar {
-            width: 70px;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
+            width: 75px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(12px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px 0;
-            gap: 30px;
+            padding: 25px 0;
+            gap: 35px;
+            z-index: 100;
         }
 
-        .sidebar i { font-size: 1.5rem; color: #666; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .active { color: #a855f7; text-shadow: 0 0 10px #a855f7; }
+        .sidebar i {
+            font-size: 1.6rem;
+            color: #555;
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        /* Main Welcome Content */
-        .container {
+        .sidebar i:hover, .sidebar i.active {
+            color: var(--accent-purple);
+            text-shadow: 0 0 15px var(--accent-purple);
+            transform: scale(1.1);
+        }
+
+        /* Main Welcome Container */
+        .main-container {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
             background: url('https://www.transparenttextures.com/patterns/stardust.png');
         }
 
         h1 {
-            font-size: 4rem;
-            margin: 0;
+            font-size: 4.5rem;
             font-weight: 900;
+            margin: 0;
+            letter-spacing: -1px;
         }
 
-        h1 span { color: #a855f7; }
+        /* Typewriter Styling */
+        #typewriter {
+            color: var(--accent-purple);
+            border-right: 3px solid var(--accent-purple);
+            padding-right: 8px;
+            animation: blink 0.7s infinite;
+        }
 
-        .search-container {
-            margin-top: 30px;
+        @keyframes blink {
+            0%, 100% { border-color: transparent; }
+            50% { border-color: var(--accent-purple); }
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            margin-top: 15px;
+            opacity: 0.6;
+            letter-spacing: 1px;
+        }
+
+        /* Search / Proxy Box */
+        .search-box {
+            margin-top: 40px;
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             position: relative;
         }
 
-        .search-container input {
+        .search-box input {
             width: 100%;
-            padding: 15px 25px;
+            padding: 18px 30px;
             border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             color: white;
+            font-size: 1.1rem;
             outline: none;
-            backdrop-filter: blur(5px);
+            transition: 0.4s;
         }
 
-        .btn-go {
+        .search-box input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .go-btn {
             position: absolute;
-            right: 10px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
-            background: #a855f7;
+            background: var(--accent-purple);
             border: none;
             color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 800;
             cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .go-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+            filter: brightness(1.1);
         }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <i class="fa-solid fa-house active"></i>
+        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-compass"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
 
-    <div class="container">
-        <h1>Welcome to <span>static</span></h1>
-        <p style="opacity: 0.6; letter-spacing: 1px;">Start your unblocking journey today!</p>
+    <div class="main-container">
+        <h1>Welcome to <span id="typewriter"></span></h1>
+        <p class="tagline">Start your unblocking journey today!</p>
         
-        <div class="search-container">
-            <input type="text" placeholder="Search Google or type a URL">
-            <button class="btn-go">Get Started</button>
+        <div class="search-box">
+            <input type="text" id="proxy-input" placeholder="Search Google or enter a URL...">
+            <button class="go-btn" onclick="launchProxy()">Get Started</button>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
+    <script>
+        // 1. Typewriter Effect Logic
+        const textElement = document.getElementById('typewriter');
+        const phrase = "static";
+        let charIndex = 0;
+
+        function type() {
+            if (charIndex < phrase.length) {
+                textElement.textContent += phrase.charAt(charIndex);
+                charIndex++;
+                setTimeout(type, 180);
+            }
+        }
+
+        // 2. Scramjet Proxy Logic
+        window.__scramjet$config = {
+            prefix: '/service/',
+            codec: 'xor',
+            encodeUrl: (str) => {
+                if (!str) return str;
+                return encodeURIComponent(str.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
+            }
+        };
+
+        function launchProxy() {
+            const input = document.getElementById('proxy-input').value.trim();
+            if (!input) return;
+
+            let url = input;
+            if (!url.includes('.') || url.includes(' ')) {
+                url = 'https://www.google.com/search?q=' + encodeURIComponent(url);
+            } else if (!url.startsWith('http')) {
+                url = 'https://' + url;
+            }
+
+            const encoded = window.__scramjet$config.prefix + window.__scramjet$config.encodeUrl(url);
+            window.location.href = encoded;
+        }
+
+        // Start everything on load
+        window.addEventListener('DOMContentLoaded', () => {
+            type();
+            
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
+            }
+        });
+
+        // Allow 'Enter' key to search
+        document.getElementById('proxy-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') launchProxy();
+        });
+    </script>
 </body>
 </html>

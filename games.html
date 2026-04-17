@@ -35,7 +35,7 @@
             cursor: pointer;
             border: 1px solid transparent;
         }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
         .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
     </style>
 </head>
@@ -56,42 +56,41 @@
     <script src="c1.js"></script>
     
     <script>
-        // Force-loading games from apps.html
         async function loadGames() {
             const container = document.getElementById('game-container');
             try {
+                // Grabbing your loose apps.html file from GitHub root
                 const response = await fetch('apps.html');
                 const text = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, 'text/html');
                 
-                // This looks for any "card" or "game" links in your apps.html
-                const games = doc.querySelectorAll('a, .card, .game'); 
+                // Finds every link inside your apps.html
+                const games = doc.querySelectorAll('a'); 
                 
                 if (games.length === 0) {
-                    container.innerHTML = "<p>No games found in apps.html. Check file content.</p>";
+                    container.innerHTML = "<p>No games found inside apps.html. Make sure that file has links!</p>";
                     return;
                 }
 
                 games.forEach(game => {
-                    const name = game.innerText || "Unknown Game";
+                    const name = game.innerText || "Game";
                     const link = game.getAttribute('href') || "#";
-                    const img = game.querySelector('img')?.src || "https://via.placeholder.com/150";
+                    const img = game.querySelector('img')?.src || "favicon.png";
 
                     const card = document.createElement('div');
                     card.className = 'game-card';
                     card.onclick = () => window.location.href = link;
                     card.innerHTML = `
-                        <img src="${img}" onerror="this.src='https://via.placeholder.com/150'">
+                        <img src="${img}" onerror="this.src='favicon.png'">
                         <h3>${name}</h3>
                     `;
                     container.appendChild(card);
                 });
             } catch (err) {
-                console.error("Failed to load apps.html:", err);
+                console.error("Error loading apps.html:", err);
             }
         }
-
         window.addEventListener('DOMContentLoaded', loadGames);
     </script>
 </body>

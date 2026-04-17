@@ -1,56 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="referrer" content="no-referrer" />
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN" />
-  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <link rel="shortcut icon" id="tab-favicon" href="favicon.png" />
-  <title id="t">Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/assets/css/global.css?v=6" />
-  <link rel="stylesheet" href="/assets/css/container.css?v=2" />
-  <link rel="stylesheet" href="/assets/css/nav.css?v=01" />
-  <script src="/assets/js/index-3.js"></script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6840529569014734"
-    crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static | Games</title>
+    
+    <meta name="referrer" content="no-referrer" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #a855f7;
+            --sidebar-bg: rgba(10, 10, 10, 0.9);
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            background: #050505;
+            background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 75px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 25px 0;
+            gap: 35px;
+            z-index: 10;
+        }
+
+        .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+
+        /* Main Content Scroll Area */
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+        }
+
+        h1 { font-size: 3rem; font-weight: 900; margin-bottom: 20px; }
+
+        /* Floating Period Animation */
+        .dot {
+            display: inline-block;
+            color: var(--accent);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Search & Filter Bar Styling */
+        .input-c {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        #search, #category {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            outline: none;
+            backdrop-filter: blur(5px);
+        }
+
+        #search { flex-grow: 1; max-width: 400px; }
+
+        /* Game Grid - Where the Duck site scripts inject content */
+        .apps {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+
+        /* Customizing the auto-generated game cards */
+        .apps div {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 20px !important;
+            padding: 15px !important;
+            transition: 0.3s !important;
+        }
+
+        .apps div:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+        }
+    </style>
 </head>
 
 <body>
-  <div class="f-nav"></div>
-  <div class="input-c">
-    <input type="text" id="search" onkeyup="bar()" placeholder="Search" />
-    <select id="category" name="category" onchange="category()">
-      <option value="all">&#65;&#108;&#108;</option>
-      <option value="android">
-        &#65;&#110;&#100;&#114;&#111;&#105;&#100;&#32;&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
-      <option value="2P">&#77;&#117;&#108;&#116;&#105;&#112;&#108;&#97;&#121;&#101;&#114;</option>
-      <option value="sports">&#83;&#112;&#111;&#114;&#116;&#115;</option>
-      <option value="flash">&#70;&#108;&#97;&#115;&#104;</option>
-      <option value="emu">&#69;&#109;&#117;&#108;&#97;&#116;&#111;&#114;</option>
-      <option value="local">&#76;&#111;&#99;&#97;&#108;</option>
-    </select>
-  </div>
-  <div class="pinned"></div>
-  <div class="apps"></div>
-  <script src="/assets/js/c1.js?v=001"></script>
-  <script src="./assets/mathematics/bundle.js?v=2025-04-15"></script>
-  <script src="./assets/mathematics/config.js?v=2025-04-15"></script>
-  <script src="/assets/js/m1.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WKJQ5QHQTJ"></script>
-  <!-- DO NOT REMOVE-->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+    <div class="sidebar">
+        <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad active"></i>
+        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
+    </div>
 
-    gtag("config", "G-WKJQ5QHQTJ");
-  </script>
-  <!-- DO NOT REMOVE-->
+    <div class="content">
+        <h1>Games<span class="dot">.</span></h1>
+
+        <div class="input-c">
+            <input type="text" id="search" onkeyup="bar()" placeholder="Search library..." />
+            <select id="category" name="category" onchange="category()">
+                <option value="all">All Games</option>
+                <option value="sports">Sports</option>
+                <option value="flash">Flash</option>
+                <option value="emu">Emulator</option>
+                <option value="2P">Multiplayer</option>
+            </select>
+        </div>
+
+        <div class="pinned"></div>
+        <div class="apps"></div>
+    </div>
+
+    <script src="/assets/js/index-3.js"></script>
+    <script src="/assets/js/c1.js?v=001"></script>
+    <script src="/assets/js/m1.js"></script>
+    
+    <script>
+        // Proxy Engine Registration
+        window.addEventListener('DOMContentLoaded', () => {
+            if ('serviceWorker' in navigator) {
+                // Adjust scope if your proxy path is different
+                navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
+            }
+        });
+    </script>
 </body>
-
 </html>

@@ -36,59 +36,58 @@
             border: 1px solid transparent;
         }
         .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; height: 120px; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad active"></i>
-        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
+        <i class="fa-solid fa-gear"></i>
     </div>
 
     <div class="content">
         <h1>Games<span class="dot">.</span></h1>
         <div id="game-container" class="apps">
-            </div>
+            <p id="status">Scanning for games...</p>
+        </div>
     </div>
 
-    <script src="index-3.js"></script>
-    <script src="c1.js"></script>
-    
     <script>
         async function loadGames() {
             const container = document.getElementById('game-container');
+            const status = document.getElementById('status');
             try {
-                // Grabbing your loose apps.html file from GitHub root
                 const response = await fetch('apps.html');
                 const text = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, 'text/html');
                 
-                // Finds every link inside your apps.html
                 const games = doc.querySelectorAll('a'); 
                 
                 if (games.length === 0) {
-                    container.innerHTML = "<p>No games found inside apps.html. Make sure that file has links!</p>";
+                    status.innerText = "No links found in apps.html. Add some <a> tags!";
                     return;
                 }
 
+                status.style.display = 'none'; // Hide the loading text
+
                 games.forEach(game => {
-                    const name = game.innerText || "Game";
+                    const name = game.innerText.trim() || "Game";
                     const link = game.getAttribute('href') || "#";
-                    const img = game.querySelector('img')?.src || "favicon.png";
+                    const imgSource = game.querySelector('img')?.getAttribute('src') || "favicon.png";
 
                     const card = document.createElement('div');
                     card.className = 'game-card';
                     card.onclick = () => window.location.href = link;
                     card.innerHTML = `
-                        <img src="${img}" onerror="this.src='favicon.png'">
+                        <img src="${imgSource}" onerror="this.src='favicon.png'">
                         <h3>${name}</h3>
                     `;
                     container.appendChild(card);
                 });
             } catch (err) {
-                console.error("Error loading apps.html:", err);
+                status.innerText = "Error: Could not read apps.html";
             }
         }
         window.addEventListener('DOMContentLoaded', loadGames);

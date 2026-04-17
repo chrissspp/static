@@ -28,8 +28,8 @@
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             color: white; padding: 12px; border-radius: 12px; outline: none;
         }
+        /* Grid for games */
         .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        /* Style for the auto-generated game cards */
         .apps div { 
             background: rgba(255,255,255,0.05) !important; 
             padding: 15px !important; 
@@ -46,7 +46,7 @@
     <div class="sidebar">
         <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad active"></i>
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
     </div>
     <div class="content">
         <h1>Games<span class="dot">.</span></h1>
@@ -62,9 +62,9 @@
         <div class="apps"></div>
     </div>
 
-    <script src="assets/js/index-3.js"></script>
-    <script src="assets/js/c1.js"></script>
-    <script src="assets/js/m1.js"></script>
+    <script src="index-3.js"></script>
+    <script src="c1.js"></script>
+    <script src="m1.js"></script>
     
     <script>
         window.addEventListener('DOMContentLoaded', () => {

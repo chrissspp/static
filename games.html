@@ -1,41 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static | Games</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #a855f7; }
-        body {
-            margin: 0; display: flex; background: #050505;
-            background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%);
-            color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden;
-        }
-        .sidebar {
-            width: 75px; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px;
-        }
+        body { margin: 0; display: flex; background: #050505; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        .sidebar { width: 75px; background: rgba(10, 10, 10, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; }
         .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
         .sidebar i:hover, .sidebar i.active { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
-        .content { flex-grow: 1; padding: 40px; overflow-y: auto; background: url('https://www.transparenttextures.com/patterns/stardust.png'); }
+        .content { flex-grow: 1; padding: 40px; overflow-y: auto; background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%); }
         h1 { font-size: 3rem; font-weight: 900; margin-top: 0; }
-        .dot { display: inline-block; color: var(--accent); animation: float 3s infinite; }
-        @keyframes float { 50% { transform: translateY(-10px); } }
-        
-        .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; }
-        .game-card { 
-            background: rgba(255,255,255,0.05); 
-            padding: 15px; 
-            border-radius: 15px; 
-            text-align: center; 
-            transition: 0.3s;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .game-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
         .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; height: 120px; object-fit: cover; }
     </style>
 </head>
@@ -43,11 +24,10 @@
     <div class="sidebar">
         <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad active"></i>
-        <i class="fa-solid fa-gear"></i>
+        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
     </div>
-
     <div class="content">
-        <h1>Games<span class="dot">.</span></h1>
+        <h1>Games<span style="color:var(--accent)">.</span></h1>
         <div id="game-container" class="apps">
             <p id="status">Scanning for games...</p>
         </div>
@@ -62,35 +42,37 @@
                 const text = await response.text();
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a'); 
                 
-                const games = doc.querySelectorAll('a'); 
-                
-                if (games.length === 0) {
-                    status.innerText = "No links found in apps.html. Add some <a> tags!";
+                if (links.length === 0) {
+                    status.innerText = "No games found. Add <a> tags to apps.html!";
                     return;
                 }
 
-                status.style.display = 'none'; // Hide the loading text
+                status.style.display = 'none';
+                links.forEach(link => {
+                    const name = link.innerText.trim() || "Game";
+                    const rawUrl = link.getAttribute('href');
+                    const img = link.querySelector('img')?.src || "favicon.png";
 
-                games.forEach(game => {
-                    const name = game.innerText.trim() || "Game";
-                    const link = game.getAttribute('href') || "#";
-                    const imgSource = game.querySelector('img')?.getAttribute('src') || "favicon.png";
+                    // THE PROXY LOCK:
+                    // This creates the link like: 2static.vercel.app/service/BASE64_URL
+                    const proxiedUrl = "/service/" + btoa(rawUrl);
 
                     const card = document.createElement('div');
                     card.className = 'game-card';
-                    card.onclick = () => window.location.href = link;
+                    card.onclick = () => { window.location.href = proxiedUrl; };
                     card.innerHTML = `
-                        <img src="${imgSource}" onerror="this.src='favicon.png'">
+                        <img src="${img}" onerror="this.src='favicon.png'">
                         <h3>${name}</h3>
                     `;
                     container.appendChild(card);
                 });
-            } catch (err) {
-                status.innerText = "Error: Could not read apps.html";
+            } catch (e) {
+                status.innerText = "Error loading apps.html";
             }
         }
-        window.addEventListener('DOMContentLoaded', loadGames);
+        window.onload = loadGames;
     </script>
 </body>
 </html>

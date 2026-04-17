@@ -25,24 +25,18 @@
         .dot { display: inline-block; color: var(--accent); animation: float 3s infinite; }
         @keyframes float { 50% { transform: translateY(-10px); } }
         
-        .input-c { margin-bottom: 30px; display: flex; gap: 15px; }
-        #search, #category {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white; padding: 12px; border-radius: 12px; outline: none;
-        }
-        
-        /* The grid container your scripts look for */
         .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 25px; }
-        .apps div { 
-            background: rgba(255,255,255,0.05) !important; 
-            padding: 15px !important; 
-            border-radius: 15px !important; 
-            text-align: center !important; 
+        .game-card { 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px; 
+            border-radius: 15px; 
+            text-align: center; 
             transition: 0.3s;
             cursor: pointer;
+            border: 1px solid transparent;
         }
-        .apps div:hover { transform: translateY(-5px); border: 1px solid var(--accent) !important; }
-        .apps img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); }
+        .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -54,29 +48,51 @@
 
     <div class="content">
         <h1>Games<span class="dot">.</span></h1>
-
-        <div class="input-c">
-            <input type="text" id="search" onkeyup="bar()" placeholder="Search library..." />
-            <select id="category" name="category" onchange="category()">
-                <option value="all">All Games</option>
-                <option value="sports">Sports</option>
-                <option value="flash">Flash</option>
-            </select>
-        </div>
-
-        <div class="pinned"></div>
-        <div class="apps"></div> </div>
+        <div id="game-container" class="apps">
+            </div>
+    </div>
 
     <script src="index-3.js"></script>
     <script src="c1.js"></script>
-    <script src="m1.js"></script>
     
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
+        // Force-loading games from apps.html
+        async function loadGames() {
+            const container = document.getElementById('game-container');
+            try {
+                const response = await fetch('apps.html');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                
+                // This looks for any "card" or "game" links in your apps.html
+                const games = doc.querySelectorAll('a, .card, .game'); 
+                
+                if (games.length === 0) {
+                    container.innerHTML = "<p>No games found in apps.html. Check file content.</p>";
+                    return;
+                }
+
+                games.forEach(game => {
+                    const name = game.innerText || "Unknown Game";
+                    const link = game.getAttribute('href') || "#";
+                    const img = game.querySelector('img')?.src || "https://via.placeholder.com/150";
+
+                    const card = document.createElement('div');
+                    card.className = 'game-card';
+                    card.onclick = () => window.location.href = link;
+                    card.innerHTML = `
+                        <img src="${img}" onerror="this.src='https://via.placeholder.com/150'">
+                        <h3>${name}</h3>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Failed to load apps.html:", err);
             }
-        });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadGames);
     </script>
 </body>
 </html>

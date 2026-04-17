@@ -1,188 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static | Games</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #050505;
-            --accent-purple: #a855f7;
-            --sidebar-bg: rgba(10, 10, 10, 0.8);
+        :root { --accent: #a855f7; }
+        body { margin: 0; display: flex; background: #050505; color: white; font-family: sans-serif; height: 100vh; overflow: hidden; }
+        .sidebar { width: 75px; background: rgba(10, 10, 10, 0.9); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; border-right: 1px solid rgba(255,255,255,0.1); }
+        .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; }
+        .sidebar i.active { color: var(--accent); }
+        .content { flex-grow: 1; padding: 40px; overflow-y: auto; }
+        .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        
+        /* Manual Game Card Styling */
+        .card { 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px; 
+            border-radius: 15px; 
+            text-align: center; 
+            cursor: pointer; 
+            border: 1px solid transparent;
+            transition: 0.3s;
         }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            background: #050505;
-            background-image: radial-gradient(circle at 50% 80%, #2e1065 0%, #050505 70%);
-            color: white;
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 75px;
-            background: var(--sidebar-bg);
-            backdrop-filter: blur(12px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 25px 0;
-            gap: 35px;
-            z-index: 100;
-        }
-
-        .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .sidebar i.active { color: var(--accent-purple); text-shadow: 0 0 15px var(--accent-purple); }
-
-        /* Main Container */
-        .container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-        }
-
-        h1 {
-            font-size: 4.5rem;
-            font-weight: 900;
-            margin: 0;
-            display: flex;
-            align-items: baseline;
-        }
-
-        /* Floating Animation */
-        .floating-letter {
-            display: inline-block;
-            color: var(--accent-purple);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .tagline { margin-top: 15px; opacity: 0.6; letter-spacing: 1px; }
-
-        /* Search Box */
-        .search-box {
-            margin-top: 40px;
-            width: 100%;
-            max-width: 550px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 18px 30px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            color: white;
-            font-size: 1.1rem;
-            outline: none;
-        }
-
-        .go-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: var(--accent-purple);
-            border: none;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 30px;
-            font-weight: 800;
-            cursor: pointer;
-        }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .card img { width: 100%; border-radius: 10px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
-        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
+        <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad active"></i>
+        <i class="fa-solid fa-gear"></i>
     </div>
+    <div class="content">
+        <h1>Games<span>.</span></h1>
+        <div class="apps">
+            <div class="card" onclick="launchGame('https://google.com')">
+                <img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png">
+                <h3>Google Test</h3>
+            </div>
 
-    <div class="container">
-        <h1>Welcome to&nbsp;<span id="typewriter"></span></h1>
-        <p class="tagline">Start your unblocking journey today!</p>
-        
-        <div class="search-box">
-            <input type="text" id="url-input" placeholder="Search Google or enter a URL...">
-            <button class="go-btn" onclick="launchProxy()">Get Started</button>
+            <div class="card" onclick="launchGame('https://poki.com')">
+                <img src="https://via.placeholder.com/150">
+                <h3>Poki Games</h3>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mercuryworkshop/scramjet@latest/dist/scramjet.codecs.js"></script>
     <script>
-        const textElement = document.getElementById('typewriter');
-        // Added a period to the end of each phrase string
-        const phrases = ["static.", "unblocked.", "freedom."];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-
-        function typeLoop() {
-            const currentPhrase = phrases[phraseIndex];
-            
-            if (isDeleting) {
-                charIndex--;
-            } else {
-                charIndex++;
-            }
-
-            let htmlContent = "";
-            for (let i = 0; i < charIndex; i++) {
-                htmlContent += `<span class="floating-letter" style="animation-delay: ${i * 0.1}s">${currentPhrase[i]}</span>`;
-            }
-            textElement.innerHTML = htmlContent;
-
-            let typeSpeed = isDeleting ? 60 : 120;
-
-            if (!isDeleting && charIndex === currentPhrase.length) {
-                isDeleting = true;
-                typeSpeed = 2500; // Pause while the word (and period) floats
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 500;
-            }
-            setTimeout(typeLoop, typeSpeed);
+        function launchGame(url) {
+            // Using a simple Base64 encoding for the proxy launch
+            window.location.href = '/service/' + btoa(url);
         }
-
-        function launchProxy() {
-            const input = document.getElementById('url-input').value.trim();
-            if (!input) return;
-            let url = input.includes('.') && !input.includes(' ') ? input : 'https://www.google.com/search?q=' + encodeURIComponent(input);
-            if (!url.startsWith('http')) url = 'https://' + url;
-            
-            // Using the XOR encoding for the proxy launch
-            const prefix = '/service/';
-            const encoded = prefix + encodeURIComponent(url.split('').map((char, i) => i % 2 ? String.fromCharCode(char.charCodeAt(0) ^ 2) : char).join(''));
-            window.location.href = encoded;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            typeLoop();
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js', { scope: '/service/' });
-            }
-        });
     </script>
 </body>
 </html>

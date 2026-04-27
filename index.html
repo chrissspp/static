@@ -3,59 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Static | Games</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --accent-purple: #a855f7; --sidebar-bg: rgba(10, 10, 10, 0.8); }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: #050505; background-image: radial-gradient(circle at 50% 80%, #2e1065 0%, #050505 70%); color: white; height: 100vh; display: flex; overflow: hidden; }
-        .sidebar { width: 75px; background: var(--sidebar-bg); backdrop-filter: blur(12px); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; z-index: 100; }
+        :root { --accent: #a855f7; }
+        body { margin: 0; display: flex; background: #050505; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar layout */
+        .sidebar { width: 75px; background: rgba(10, 10, 10, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; z-index: 100; }
         .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .sidebar i.active { color: var(--accent-purple); text-shadow: 0 0 15px var(--accent-purple); }
-        .container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: url('https://www.transparenttextures.com/patterns/stardust.png'); }
-        h1 { font-size: 4.5rem; font-weight: 900; margin: 0; display: flex; align-items: baseline; }
-        .floating-letter { display: inline-block; color: var(--accent-purple); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        .search-box { margin-top: 40px; width: 100%; max-width: 550px; position: relative; }
-        .search-box input { width: 100%; padding: 18px 30px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.05); color: white; font-size: 1.1rem; outline: none; }
-        .go-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: var(--accent-purple); border: none; color: white; padding: 10px 25px; border-radius: 30px; font-weight: 800; cursor: pointer; }
+        .sidebar i.active { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+
+        .content { flex-grow: 1; position: relative; overflow: hidden; background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%); }
+        
+        /* Library View */
+        #library { padding: 40px; height: 100%; overflow-y: auto; box-sizing: border-box; }
+        .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .game-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; height: 120px; object-fit: cover; }
+
+        /* Embedded View */
+        #game-view-container { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; }
+        #game-frame { width: 100%; height: 100%; border: none; }
+        .back-btn { position: absolute; top: 20px; right: 20px; background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; z-index: 200; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad active"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
-    <div class="container">
-        <h1>Welcome to&nbsp;<span id="typewriter"></span></h1>
-        <div class="search-box">
-            <input type="text" id="url-input" placeholder="Search Google or enter a URL...">
-            <button class="go-btn" onclick="launchProxy()">Get Started</button>
+
+    <div class="content">
+        <div id="game-view-container">
+            <button class="back-btn" onclick="closeGame()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <iframe id="game-frame"></iframe>
+        </div>
+
+        <div id="library">
+            <h1>Games<span style="color:var(--accent)">.</span></h1>
+            <div id="game-container" class="apps">
+                <p>Loading library...</p>
+            </div>
         </div>
     </div>
+
     <script>
-        const textElement = document.getElementById('typewriter');
-        const phrases = ["static.", "unblocked.", "freedom."];
-        let phraseIndex = 0, charIndex = 0, isDeleting = false;
-        function typeLoop() {
-            const current = phrases[phraseIndex];
-            if (isDeleting) charIndex--; else charIndex++;
-            let html = "";
-            for (let i = 0; i < charIndex; i++) {
-                html += `<span class="floating-letter" style="animation-delay: ${i * 0.1}s">${current[i]}</span>`;
+        function openGame(file) {
+            const frame = document.getElementById('game-frame');
+            frame.src = file; 
+            document.getElementById('library').style.display = 'none';
+            document.getElementById('game-view-container').style.display = 'block';
+        }
+
+        function closeGame() {
+            document.getElementById('game-frame').src = "about:blank"; 
+            document.getElementById('library').style.display = 'block';
+            document.getElementById('game-view-container').style.display = 'none';
+        }
+
+        async function loadGames() {
+            const container = document.getElementById('game-container');
+            try {
+                const response = await fetch('apps.html');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a'); 
+                
+                container.innerHTML = ''; 
+                links.forEach(link => {
+                    const name = link.innerText.trim();
+                    const file = link.getAttribute('href');
+                    const img = link.querySelector('img')?.src || "favicon.png";
+
+                    const card = document.createElement('div');
+                    card.className = 'game-card';
+                    card.onclick = () => openGame(file);
+                    card.innerHTML = `<img src="${img}" onerror="this.src='favicon.png'"><h3>${name}</h3>`;
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                container.innerHTML = "Error loading apps.html";
             }
-            textElement.innerHTML = html;
-            let speed = isDeleting ? 60 : 120;
-            if (!isDeleting && charIndex === current.length) { isDeleting = true; speed = 2500; }
-            else if (isDeleting && charIndex === 0) { isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500; }
-            setTimeout(typeLoop, speed);
         }
-        function launchProxy() {
-            const input = document.getElementById('url-input').value;
-            window.location.href = '/service/' + btoa(input);
-        }
-        window.addEventListener('DOMContentLoaded', typeLoop);
+        window.onload = loadGames;
     </script>
 </body>
 </html>

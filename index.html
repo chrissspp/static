@@ -15,7 +15,6 @@
             color: white; height: 100vh; display: flex; overflow: hidden; 
         }
         
-        /* Sidebar */
         .sidebar { 
             width: 75px; background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(12px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
@@ -25,22 +24,20 @@
         .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
         .sidebar i:hover, .sidebar i.active { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
 
-        /* Main Content */
         .container { 
             flex-grow: 1; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; 
             background: url('https://www.transparenttextures.com/patterns/stardust.png'); 
         }
         h1 { font-size: 4rem; font-weight: 900; margin-bottom: 10px; }
-        .floating-letter { display: inline-block; color: var(--accent); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .accent-text { color: var(--accent); }
 
         .search-box { margin-top: 40px; width: 100%; max-width: 500px; position: relative; }
         .search-box input { 
             width: 100%; padding: 18px 30px; border-radius: 50px; 
             border: 1px solid rgba(255, 255, 255, 0.1); 
             background: rgba(255, 255, 255, 0.05); color: white; 
-            font-size: 1.1rem; outline: none; 
+            font-size: 1.1rem; outline: none; box-sizing: border-box;
         }
         .go-btn { 
             position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
@@ -51,29 +48,30 @@
 </head>
 <body>
     <div class="sidebar">
-        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-house active" onclick="window.location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad" onclick="window.location.href='games.html'"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
 
     <div class="container">
-        <h1>Static<span class="floating-letter">.</span></h1>
+        <h1>Static<span class="accent-text">.</span></h1>
         <div class="search-box">
-            <input type="text" id="url-input" placeholder="Search or enter a URL...">
+            <input type="text" id="url-input" placeholder="Enter URL or Search...">
             <button class="go-btn" onclick="launchProxy()">Go</button>
         </div>
     </div>
 
     <script>
+        // Simple launcher
         function launchProxy() {
-            const input = document.getElementById('url-input').value;
-            if (input) {
-                // This uses your proxy service worker to load the site
-                window.location.href = "/service/" + btoa(input);
+            const val = document.getElementById('url-input').value;
+            if (val) {
+                // Tries to use your service worker path
+                window.location.href = "/service/" + btoa(val);
             }
         }
 
-        // Keyboard support for Enter key
+        // Allow 'Enter' key to work
         document.getElementById('url-input').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') launchProxy();
         });

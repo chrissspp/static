@@ -9,19 +9,20 @@
     <style>
         :root { --accent: #a855f7; }
         body { margin: 0; display: flex; background: #050505; color: white; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
-        .sidebar { width: 75px; background: rgba(10, 10, 10, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; z-index: 10; }
+        .sidebar { width: 75px; background: rgba(10, 10, 10, 0.9); border-right: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 35px; z-index: 100; }
         .sidebar i { font-size: 1.6rem; color: #555; cursor: pointer; transition: 0.3s; }
-        .sidebar i.active, .sidebar i:hover { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
-        
-        .content { flex-grow: 1; padding: 40px; overflow-y: auto; background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%); position: relative; }
+        .sidebar i.active { color: var(--accent); }
+        .content { flex-grow: 1; position: relative; background-image: radial-gradient(circle at center, #1e1b4b 0%, #050505 100%); }
+        #library { padding: 40px; height: 100%; overflow-y: auto; box-sizing: border-box; }
         .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-        .game-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
-        .game-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .game-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .game-card:hover { border-color: var(--accent); transform: translateY(-3px); }
         .game-card img { width: 100%; border-radius: 10px; margin-bottom: 10px; height: 120px; object-fit: cover; }
-
-        /* Game Frame Styling */
-        #game-view { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; border: none; }
-        .back-btn { display: none; position: absolute; top: 20px; right: 20px; background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; z-index: 20; font-weight: bold; }
+        
+        /* The Game Window */
+        #game-view { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .back-btn { position: absolute; top: 20px; right: 20px; background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; z-index: 200; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -32,67 +33,46 @@
     </div>
 
     <div class="content">
-        <button class="back-btn" id="back-btn" onclick="closeGame()">Back to Library</button>
-        <iframe id="game-view"></iframe>
+        <div id="game-view">
+            <button class="back-btn" onclick="closeGame()">Back</button>
+            <iframe id="game-frame"></iframe>
+        </div>
 
         <div id="library">
             <h1>Games<span>.</span></h1>
             <div id="game-container" class="apps">
-                <p id="status">Scanning for games...</p>
-            </div>
+                </div>
         </div>
     </div>
 
     <script>
         function openGame(url) {
-            const library = document.getElementById('library');
-            const frame = document.getElementById('game-view');
-            const backBtn = document.getElementById('back-btn');
-
-            // Wrap the URL in your proxy path
-            frame.src = "/service/" + btoa(url); 
-            
-            library.style.display = 'none';
-            frame.style.display = 'block';
-            backBtn.style.display = 'block';
+            document.getElementById('game-frame').src = url;
+            document.getElementById('library').style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
         }
 
         function closeGame() {
-            const library = document.getElementById('library');
-            const frame = document.getElementById('game-view');
-            const backBtn = document.getElementById('back-btn');
-
-            frame.src = "";
-            library.style.display = 'block';
-            frame.style.display = 'none';
-            backBtn.style.display = 'none';
+            document.getElementById('game-frame').src = "";
+            document.getElementById('library').style.display = 'block';
+            document.getElementById('game-view').style.display = 'none';
         }
 
         async function loadGames() {
             const container = document.getElementById('game-container');
-            try {
-                const response = await fetch('apps.html');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = doc.querySelectorAll('a'); 
-                
-                document.getElementById('status').style.display = 'none';
-
-                links.forEach(link => {
-                    const name = link.innerText.trim() || "Game";
-                    const rawUrl = link.getAttribute('href');
-                    const img = link.querySelector('img')?.src || "favicon.png";
-
-                    const card = document.createElement('div');
-                    card.className = 'game-card';
-                    card.onclick = () => openGame(rawUrl);
-                    card.innerHTML = `<img src="${img}" onerror="this.src='favicon.png'"><h3>${name}</h3>`;
-                    container.appendChild(card);
-                });
-            } catch (e) {
-                console.error(e);
-            }
+            const res = await fetch('apps.html');
+            const text = await res.text();
+            const doc = new DOMParser().parseFromString(text, 'text/html');
+            const links = doc.querySelectorAll('a');
+            
+            container.innerHTML = '';
+            links.forEach(link => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = () => openGame(link.getAttribute('href'));
+                card.innerHTML = `<img src="favicon.png"><h3>${link.innerText}</h3>`;
+                container.appendChild(card);
+            });
         }
         window.onload = loadGames;
     </script>

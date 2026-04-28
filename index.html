@@ -3,107 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Nexus</title>
+    <title>Static | Nexus OS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #a855f7; --bg: #020202; }
+        :root { 
+            --accent: #a855f7; 
+            --accent-glow: rgba(168, 85, 247, 0.4); 
+            --bg-deep: #020202;
+            --glass: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Feature: Multi-Layer Resilience Background */
         body { 
             margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
+            background: var(--bg-deep); /* Base Layer */
+            background-image: 
+                radial-gradient(circle at 80% 20%, #1e1b4b 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, #2e1065 0%, transparent 40%); /* Color Layer */
+            color: white; height: 100vh; display: flex; overflow: hidden; 
         }
 
-        /* Moving Starfield Background */
-        #stars {
+        /* Feature: Moving Star Dust */
+        #dust {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1a1635 0%, #020202 100%);
-            z-index: -1;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.2; z-index: -1; animation: drift 120s linear infinite;
         }
+        @keyframes drift { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-        /* Glass Sidebar */
+        /* Feature: Smart Sidebar */
         .sidebar { 
-            width: 80px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); 
+            width: 80px; background: var(--glass); backdrop-filter: blur(25px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 40px; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; z-index: 1000;
         }
-        .sidebar i { font-size: 1.5rem; color: #444; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
+        .sidebar i { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); transform: scale(1.2); }
 
-        /* Main Center UI */
-        .main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        h1 { font-size: 5rem; font-weight: 800; margin: 0; letter-spacing: -3px; }
-        .dot { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+        /* Feature: Center Hub */
+        .hub { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
         
-        .search-container { margin-top: 40px; width: 100%; max-width: 600px; position: relative; }
-        .search-container input { 
-            width: 100%; padding: 22px 35px; border-radius: 100px; 
+        .os-info { position: absolute; top: 30px; right: 40px; text-align: right; font-size: 0.8rem; color: #555; }
+        
+        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -5px; line-height: 1; }
+        h1 span { color: var(--accent); text-shadow: 0 0 40px var(--accent-glow); }
+        
+        .search-area { margin-top: 50px; width: 100%; max-width: 650px; position: relative; }
+        .search-area input { 
+            width: 100%; padding: 25px 40px; border-radius: 100px; 
             border: 1px solid rgba(255, 255, 255, 0.1); 
-            background: rgba(255, 255, 255, 0.05); color: white; 
-            font-size: 1.2rem; outline: none; transition: 0.3s;
+            background: var(--glass); color: white; 
+            font-size: 1.25rem; outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
         }
-        .search-container input:focus { border-color: var(--accent); box-shadow: 0 0 30px rgba(168, 85, 247, 0.2); }
-        
-        .go-btn { 
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
+        .search-area input:focus { border-color: var(--accent); transform: scale(1.02); box-shadow: 0 0 40px var(--accent-glow); }
+
+        .launch-btn { 
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
             background: var(--accent); border: none; color: white; 
-            padding: 12px 30px; border-radius: 100px; font-weight: 800; cursor: pointer; 
+            padding: 15px 40px; border-radius: 100px; font-weight: 800; cursor: pointer; 
+            transition: 0.3s;
         }
+        .launch-btn:hover { filter: brightness(1.2); transform: translateY(-50%) scale(1.05); }
+
+        /* Feature: Connection Pulse */
+        #status-light { display: inline-block; width: 8px; height: 8px; background: #555; border-radius: 50%; margin-right: 8px; }
+        .online { background: #10b981 !important; box-shadow: 0 0 10px #10b981; }
     </style>
 </head>
 <body>
-    <div id="stars"></div>
+    <div id="dust"></div>
+    
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-bolt" onclick="alert('Turbo Mode Active')"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
 
-    <div class="main">
-        <h1>Static<span class="dot">.</span></h1>
-        <p id="status" style="color: #666; margin-top: 10px;">Initializing systems...</p>
+    <div class="hub">
+        <div class="os-info">
+            STATIC OS v4.0.2<br>
+            <span id="clock">00:00:00</span>
+        </div>
+
+        <h1>Static<span>.</span></h1>
+        <p id="system-msg" style="color: #666; margin-top: 15px; font-weight: 600;">
+            <span id="status-light"></span> INITIALIZING KERNEL...
+        </p>
         
-        <div class="search-container">
-            <input type="text" id="url-input" placeholder="Search the void...">
-            <button class="go-btn" onclick="launch()">GO</button>
+        <div class="search-area">
+            <input type="text" id="main-input" placeholder="Enter URL or Search Query...">
+            <button class="launch-btn" onclick="execute()">RUN</button>
         </div>
     </div>
 
     <script>
-        // 1. SELF-HEALING SERVICE WORKER
+        // 1. Clock Feature
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // 2. Service Worker Logic (Self-Fixing)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
-                    .then(() => {
-                        document.getElementById('status').innerText = "All systems operational.";
-                        document.getElementById('status').style.color = "#a855f7";
-                    })
-                    .catch(err => {
-                        document.getElementById('status').innerText = "System Error. Check sw.js file.";
-                        console.error(err);
-                    });
-            });
+            navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
+                .then(() => {
+                    document.getElementById('status-light').className = 'online';
+                    document.getElementById('system-msg').innerHTML = '<span id="status-light" class="online"></span> SYSTEM SECURE - PROXY READY';
+                });
         }
 
-        // 2. LAUNCH LOGIC
-        function launch() {
-            let val = document.getElementById('url-input').value.trim();
+        // 3. Smart Search Execution
+        function execute() {
+            let val = document.getElementById('main-input').value.trim();
             if (!val) return;
 
-            // If it's not a direct URL, search Google
+            // Feature: Auto-Search vs Auto-URL
             if (!val.includes('.') || val.includes(' ')) {
                 val = "https://www.google.com/search?q=" + encodeURIComponent(val);
             } else if (!val.startsWith('http')) {
                 val = "https://" + val;
             }
 
-            // Route through the proxy
             window.location.href = "/service/" + btoa(val);
         }
 
-        // Handle Enter Key
-        document.getElementById('url-input').onkeypress = (e) => {
-            if (e.key === 'Enter') launch();
-        };
+        document.getElementById('main-input').onkeypress = (e) => e.key === 'Enter' && execute();
     </script>
 </body>
 </html>

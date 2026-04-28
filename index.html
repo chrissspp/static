@@ -11,65 +11,68 @@
             --accent: #a855f7; 
             --accent-glow: rgba(168, 85, 247, 0.4); 
             --bg-deep: #020202;
-            --glass: rgba(255, 255, 255, 0.04);
+            --glass: rgba(255, 255, 255, 0.06);
         }
 
-        /* Feature: Multi-Layer Resilience Background */
         body { 
             margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-deep); /* Base Layer */
-            background-image: 
-                radial-gradient(circle at 80% 20%, #1e1b4b 0%, transparent 40%),
-                radial-gradient(circle at 20% 80%, #2e1065 0%, transparent 40%); /* Color Layer */
+            background: var(--bg-deep);
             color: white; height: 100vh; display: flex; overflow: hidden; 
         }
 
-        /* Feature: Moving Star Dust */
+        /* Feature: Background Layer (Z-INDEX: 1) */
         #dust {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.2; z-index: -1; animation: drift 120s linear infinite;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020202 100%);
+            z-index: 1; pointer-events: none; /* This prevents the BG from blocking clicks */
         }
-        @keyframes drift { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
 
-        /* Feature: Smart Sidebar */
+        /* Sidebar (Z-INDEX: 100) */
         .sidebar { 
             width: 80px; background: var(--glass); backdrop-filter: blur(25px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; 
+            z-index: 100; position: relative;
         }
-        .sidebar i { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); transform: scale(1.2); }
 
-        /* Feature: Center Hub */
-        .hub { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; position: relative; }
+        /* Main Hub (Z-INDEX: 50) */
+        .hub { 
+            flex-grow: 1; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center; 
+            position: relative; z-index: 50;
+        }
         
-        .os-info { position: absolute; top: 30px; right: 40px; text-align: right; font-size: 0.8rem; color: #555; }
-        
-        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -5px; line-height: 1; }
+        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -5px; pointer-events: none; }
         h1 span { color: var(--accent); text-shadow: 0 0 40px var(--accent-glow); }
         
-        .search-area { margin-top: 50px; width: 100%; max-width: 650px; position: relative; }
+        /* The Search Container (Z-INDEX: 999) */
+        .search-area { 
+            margin-top: 50px; width: 100%; max-width: 650px; 
+            position: relative; z-index: 999; 
+        }
+
         .search-area input { 
             width: 100%; padding: 25px 40px; border-radius: 100px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            background: var(--glass); color: white; 
-            font-size: 1.25rem; outline: none; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            background: rgba(10, 10, 10, 0.8); color: white; 
+            font-size: 1.25rem; outline: none; 
+            transition: 0.3s;
+            cursor: text !important;
+            pointer-events: auto !important; /* Forces the mouse to interact */
         }
-        .search-area input:focus { border-color: var(--accent); transform: scale(1.02); box-shadow: 0 0 40px var(--accent-glow); }
+
+        .search-area input:focus { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 40px var(--accent-glow);
+            background: rgba(20, 20, 20, 0.9);
+        }
 
         .launch-btn { 
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
             background: var(--accent); border: none; color: white; 
-            padding: 15px 40px; border-radius: 100px; font-weight: 800; cursor: pointer; 
-            transition: 0.3s;
+            padding: 15px 40px; border-radius: 100px; font-weight: 800; 
+            cursor: pointer; z-index: 1000;
         }
-        .launch-btn:hover { filter: brightness(1.2); transform: translateY(-50%) scale(1.05); }
-
-        /* Feature: Connection Pulse */
-        #status-light { display: inline-block; width: 8px; height: 8px; background: #555; border-radius: 50%; margin-right: 8px; }
-        .online { background: #10b981 !important; box-shadow: 0 0 10px #10b981; }
     </style>
 </head>
 <body>
@@ -78,48 +81,27 @@
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-bolt" onclick="alert('Turbo Mode Active')"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
 
     <div class="hub">
-        <div class="os-info">
-            STATIC OS v4.0.2<br>
-            <span id="clock">00:00:00</span>
-        </div>
-
         <h1>Static<span>.</span></h1>
-        <p id="system-msg" style="color: #666; margin-top: 15px; font-weight: 600;">
-            <span id="status-light"></span> INITIALIZING KERNEL...
-        </p>
-        
         <div class="search-area">
-            <input type="text" id="main-input" placeholder="Enter URL or Search Query...">
+            <input type="text" id="main-input" placeholder="Type here..." autocomplete="off">
             <button class="launch-btn" onclick="execute()">RUN</button>
         </div>
     </div>
 
     <script>
-        // 1. Clock Feature
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
+        // Force focus on click anywhere in the search area
+        document.querySelector('.search-area').onclick = () => {
+            document.getElementById('main-input').focus();
+        };
 
-        // 2. Service Worker Logic (Self-Fixing)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
-                .then(() => {
-                    document.getElementById('status-light').className = 'online';
-                    document.getElementById('system-msg').innerHTML = '<span id="status-light" class="online"></span> SYSTEM SECURE - PROXY READY';
-                });
-        }
-
-        // 3. Smart Search Execution
         function execute() {
             let val = document.getElementById('main-input').value.trim();
             if (!val) return;
 
-            // Feature: Auto-Search vs Auto-URL
             if (!val.includes('.') || val.includes(' ')) {
                 val = "https://www.google.com/search?q=" + encodeURIComponent(val);
             } else if (!val.startsWith('http')) {
@@ -129,7 +111,9 @@
             window.location.href = "/service/" + btoa(val);
         }
 
-        document.getElementById('main-input').onkeypress = (e) => e.key === 'Enter' && execute();
+        document.getElementById('main-input').onkeypress = (e) => {
+            if (e.key === 'Enter') execute();
+        };
     </script>
 </body>
 </html>

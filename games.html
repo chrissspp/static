@@ -5,93 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Static | Nexus Library</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.4); }
+        :root { --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.4); --glass: rgba(255, 255, 255, 0.03); }
         
         body { 
             margin: 0; display: flex; background: #020202; color: white; 
             font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; 
         }
 
-        /* Sidebar Glassmorphism */
+        /* Feature: Smooth Glass Sidebar */
         .sidebar { 
-            width: 80px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); 
+            width: 80px; background: var(--glass); backdrop-filter: blur(25px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 40px; z-index: 100;
+            display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 40px; z-index: 1000;
         }
-        .sidebar i { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
+        .sidebar i { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); transform: scale(1.2); }
 
         .content { 
             flex-grow: 1; position: relative; overflow-y: auto; 
-            background: radial-gradient(circle at center, #111 0%, #020202 100%); 
-            padding: 50px;
+            background: radial-gradient(circle at top right, #1a1635 0%, #020202 60%); 
+            padding: 60px; scroll-behavior: smooth;
         }
 
-        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 40px; letter-spacing: -2px; }
-        h1 span { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+        /* Feature: Header & Game Search */
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; }
+        h1 { font-size: 3.5rem; font-weight: 800; margin: 0; letter-spacing: -3px; }
+        h1 span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
 
-        /* Game Grid */
-        .apps { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-            gap: 30px; animation: fadeIn 0.8s ease-out;
+        .game-search {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 25px; border-radius: 15px; color: white; outline: none;
+            width: 300px; transition: 0.3s;
         }
+        .game-search:focus { border-color: var(--accent); width: 350px; box-shadow: 0 0 20px var(--accent-glow); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        /* Feature: High-End Game Cards */
+        .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
         .game-card { 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 20px; overflow: hidden; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px; overflow: hidden; cursor: pointer; position: relative;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
-
         .game-card:hover { 
-            transform: translateY(-10px); border-color: var(--accent);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
+            transform: translateY(-12px) scale(1.02); border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px var(--accent-glow);
         }
+        .game-card img { width: 100%; height: 160px; object-fit: cover; transition: 0.5s; }
+        .game-card:hover img { transform: scale(1.1); filter: brightness(1.2); }
+        .info { padding: 20px; text-align: center; font-weight: 700; background: rgba(0,0,0,0.4); }
 
-        .game-card img { width: 100%; height: 140px; object-fit: cover; }
-        .game-card .info { padding: 15px; text-align: center; font-weight: 700; font-size: 0.9rem; }
-
-        /* Fullscreen Game Overlay */
+        /* Feature: Fullscreen OS Overlay */
         #game-view { 
-            display: none; position: fixed; top: 0; left: 80px; width: calc(100% - 80px); 
-            height: 100%; background: #000; z-index: 500; 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; animation: zoomIn 0.4s ease;
         }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
         iframe { width: 100%; height: 100%; border: none; }
-        .back-btn { 
-            position: absolute; top: 25px; right: 25px; background: var(--accent); 
-            color: white; border: none; padding: 12px 25px; border-radius: 50px; 
-            font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        
+        .controls {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 15px; background: rgba(0,0,0,0.7); padding: 10px 25px;
+            border-radius: 100px; border: 1px solid var(--accent); backdrop-filter: blur(10px);
         }
+        .controls button { background: none; border: none; color: white; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .controls button:hover { color: var(--accent); transform: scale(1.1); }
     </style>
 </head>
 <body>
+
     <div class="sidebar">
         <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad active"></i>
+        <i class="fa-solid fa-bolt"></i>
         <i class="fa-solid fa-gear"></i>
     </div>
 
     <div class="content">
         <div id="game-view">
-            <button class="back-btn" onclick="closeGame()"><i class="fa-solid fa-xmark"></i> Close Game</button>
+            <div class="controls">
+                <button onclick="closeGame()"><i class="fa-solid fa-arrow-left"></i> BACK</button>
+                <button onclick="location.reload()"><i class="fa-solid fa-rotate"></i> REFRESH</button>
+                <button onclick="toggleFullscreen()"><i class="fa-solid fa-expand"></i> FULLSCREEN</button>
+            </div>
             <iframe id="game-frame"></iframe>
         </div>
 
         <div id="library">
-            <h1>Nexus Library<span>.</span></h1>
-            <div id="game-container" class="apps">
-                <p>Establishing connection...</p>
+            <div class="header-flex">
+                <h1>Nexus<span>.</span></h1>
+                <input type="text" class="game-search" id="gSearch" placeholder="Filter games..." onkeyup="filterGames()">
             </div>
+            <div id="game-container" class="apps">
+                </div>
         </div>
     </div>
 
     <script>
         function openGame(url) {
-            const frame = document.getElementById('game-frame');
-            frame.src = url;
+            document.getElementById('game-frame').src = url;
             document.getElementById('game-view').style.display = 'block';
         }
 
@@ -100,34 +113,44 @@
             document.getElementById('game-view').style.display = 'none';
         }
 
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
         async function loadGames() {
             const container = document.getElementById('game-container');
             try {
                 const res = await fetch('apps.html');
-                if (!res.ok) throw new Error('apps.html missing');
                 const text = await res.text();
                 const doc = new DOMParser().parseFromString(text, 'text/html');
                 const links = doc.querySelectorAll('a');
                 
                 container.innerHTML = ''; 
-                
                 links.forEach(link => {
                     const url = link.getAttribute('href');
                     const name = link.innerText.trim();
-                    
                     const card = document.createElement('div');
                     card.className = 'game-card';
+                    card.setAttribute('data-name', name.toLowerCase());
                     card.onclick = () => openGame(url);
                     card.innerHTML = `
-                        <img src="favicon.png" onerror="this.src='https://via.placeholder.com/200x140/1a1a1a/ffffff?text=${name}'">
+                        <img src="favicon.png" onerror="this.src='https://source.unsplash.com/random/400x300?gaming,abstract&${Math.random()}'">
                         <div class="info">${name}</div>
                     `;
                     container.appendChild(card);
                 });
-            } catch (err) {
-                container.innerHTML = `<p style="color:red">Error: ${err.message}. Make sure apps.html exists.</p>`;
+            } catch (e) { container.innerHTML = "System Error: apps.html unreachable."; }
+        }
+
+        function filterGames() {
+            let input = document.getElementById('gSearch').value.toLowerCase();
+            let cards = document.getElementsByClassName('game-card');
+            for (let i = 0; i < cards.length; i++) {
+                cards[i].style.display = cards[i].getAttribute('data-name').includes(input) ? "block" : "none";
             }
         }
+
         window.onload = loadGames;
     </script>
 </body>

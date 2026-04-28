@@ -1,24 +1,109 @@
-<script>
-    // Feature: Dynamic Greeting
-    const hour = new Date().getHours();
-    const greeting = hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening";
-    document.querySelector('p').innerText = `${greeting}, Commander. All systems operational.`;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static | Nexus</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #a855f7; --bg: #020202; }
+        body { 
+            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
+        }
 
-    // Feature: Mouse Parallax Effect
-    document.addEventListener('mousemove', (e) => {
-        const x = (window.innerWidth / 2 - e.pageX) / 30;
-        const y = (window.innerHeight / 2 - e.pageY) / 30;
-        document.querySelector('.nebula').style.transform = `translate(${x}px, ${y}px)`;
-        document.querySelector('h1').style.textShadow = `${x}px ${y}px 40px var(--accent-glow)`;
-    });
+        /* Moving Starfield Background */
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a1635 0%, #020202 100%);
+            z-index: -1;
+        }
 
-    // Feature: URL Sanitizer
-    function launch() {
-        let val = document.getElementById('url-input').value.trim();
-        if (val) {
-            if (!val.includes('.')) val = "https://www.google.com/search?q=" + encodeURIComponent(val);
-            else if (!val.startsWith('http')) val = "https://" + val;
+        /* Glass Sidebar */
+        .sidebar { 
+            width: 80px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); 
+            border-right: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 40px; z-index: 100;
+        }
+        .sidebar i { font-size: 1.5rem; color: #444; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 8px var(--accent)); }
+
+        /* Main Center UI */
+        .main { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        h1 { font-size: 5rem; font-weight: 800; margin: 0; letter-spacing: -3px; }
+        .dot { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+        
+        .search-container { margin-top: 40px; width: 100%; max-width: 600px; position: relative; }
+        .search-container input { 
+            width: 100%; padding: 22px 35px; border-radius: 100px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            background: rgba(255, 255, 255, 0.05); color: white; 
+            font-size: 1.2rem; outline: none; transition: 0.3s;
+        }
+        .search-container input:focus { border-color: var(--accent); box-shadow: 0 0 30px rgba(168, 85, 247, 0.2); }
+        
+        .go-btn { 
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
+            background: var(--accent); border: none; color: white; 
+            padding: 12px 30px; border-radius: 100px; font-weight: 800; cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <div id="stars"></div>
+    <div class="sidebar">
+        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
+        <i class="fa-solid fa-gear"></i>
+    </div>
+
+    <div class="main">
+        <h1>Static<span class="dot">.</span></h1>
+        <p id="status" style="color: #666; margin-top: 10px;">Initializing systems...</p>
+        
+        <div class="search-container">
+            <input type="text" id="url-input" placeholder="Search the void...">
+            <button class="go-btn" onclick="launch()">GO</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. SELF-HEALING SERVICE WORKER
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js', { scope: '/service/' })
+                    .then(() => {
+                        document.getElementById('status').innerText = "All systems operational.";
+                        document.getElementById('status').style.color = "#a855f7";
+                    })
+                    .catch(err => {
+                        document.getElementById('status').innerText = "System Error. Check sw.js file.";
+                        console.error(err);
+                    });
+            });
+        }
+
+        // 2. LAUNCH LOGIC
+        function launch() {
+            let val = document.getElementById('url-input').value.trim();
+            if (!val) return;
+
+            // If it's not a direct URL, search Google
+            if (!val.includes('.') || val.includes(' ')) {
+                val = "https://www.google.com/search?q=" + encodeURIComponent(val);
+            } else if (!val.startsWith('http')) {
+                val = "https://" + val;
+            }
+
+            // Route through the proxy
             window.location.href = "/service/" + btoa(val);
         }
-    }
-</script>
+
+        // Handle Enter Key
+        document.getElementById('url-input').onkeypress = (e) => {
+            if (e.key === 'Enter') launch();
+        };
+    </script>
+</body>
+</html>

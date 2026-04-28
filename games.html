@@ -1,9 +1,134 @@
-<a href="Buckshot Roulette.html" data-img="https://images.igdb.com/igdb/image/upload/t_cover_big/co7u9m.png">Buckshot Roulette</a>
-<a href="Bowmasters.html">Bowmasters</a>
-<a href="Drift Hunters.html">Drift Hunters</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Static | Nexus Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #a855f7; --accent-glow: rgba(168, 85, 247, 0.4); }
+        
+        body { 
+            margin: 0; display: flex; background: #020202; color: white; 
+            font-family: 'Plus Jakarta Sans', sans-serif; height: 100vh; overflow: hidden; 
+        }
 
-<a href="Five Nights at Epstein's.html">FNAE</a>
-<a href="Bad Parenting 1.html">Bad Parenting 1</a>
+        /* Sidebar Glassmorphism */
+        .sidebar { 
+            width: 80px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); 
+            border-right: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; flex-direction: column; align-items: center; padding: 30px 0; gap: 40px; z-index: 100;
+        }
+        .sidebar i { font-size: 1.5rem; color: #555; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
 
-<a href="Chat Bot AI (A.I GPT).html">AI ChatBot</a>
-<a href="Soundboard.html">Soundboard</a>
+        .content { 
+            flex-grow: 1; position: relative; overflow-y: auto; 
+            background: radial-gradient(circle at center, #111 0%, #020202 100%); 
+            padding: 50px;
+        }
+
+        h1 { font-size: 3rem; font-weight: 800; margin-bottom: 40px; letter-spacing: -2px; }
+        h1 span { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+
+        /* Game Grid */
+        .apps { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 30px; animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .game-card { 
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px; overflow: hidden; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .game-card:hover { 
+            transform: translateY(-10px); border-color: var(--accent);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow);
+        }
+
+        .game-card img { width: 100%; height: 140px; object-fit: cover; }
+        .game-card .info { padding: 15px; text-align: center; font-weight: 700; font-size: 0.9rem; }
+
+        /* Fullscreen Game Overlay */
+        #game-view { 
+            display: none; position: fixed; top: 0; left: 80px; width: calc(100% - 80px); 
+            height: 100%; background: #000; z-index: 500; 
+        }
+        iframe { width: 100%; height: 100%; border: none; }
+        .back-btn { 
+            position: absolute; top: 25px; right: 25px; background: var(--accent); 
+            color: white; border: none; padding: 12px 25px; border-radius: 50px; 
+            font-weight: 800; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
+        <i class="fa-solid fa-gamepad active"></i>
+        <i class="fa-solid fa-gear"></i>
+    </div>
+
+    <div class="content">
+        <div id="game-view">
+            <button class="back-btn" onclick="closeGame()"><i class="fa-solid fa-xmark"></i> Close Game</button>
+            <iframe id="game-frame"></iframe>
+        </div>
+
+        <div id="library">
+            <h1>Nexus Library<span>.</span></h1>
+            <div id="game-container" class="apps">
+                <p>Establishing connection...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openGame(url) {
+            const frame = document.getElementById('game-frame');
+            frame.src = url;
+            document.getElementById('game-view').style.display = 'block';
+        }
+
+        function closeGame() {
+            document.getElementById('game-frame').src = "";
+            document.getElementById('game-view').style.display = 'none';
+        }
+
+        async function loadGames() {
+            const container = document.getElementById('game-container');
+            try {
+                const res = await fetch('apps.html');
+                if (!res.ok) throw new Error('apps.html missing');
+                const text = await res.text();
+                const doc = new DOMParser().parseFromString(text, 'text/html');
+                const links = doc.querySelectorAll('a');
+                
+                container.innerHTML = ''; 
+                
+                links.forEach(link => {
+                    const url = link.getAttribute('href');
+                    const name = link.innerText.trim();
+                    
+                    const card = document.createElement('div');
+                    card.className = 'game-card';
+                    card.onclick = () => openGame(url);
+                    card.innerHTML = `
+                        <img src="favicon.png" onerror="this.src='https://via.placeholder.com/200x140/1a1a1a/ffffff?text=${name}'">
+                        <div class="info">${name}</div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = `<p style="color:red">Error: ${err.message}. Make sure apps.html exists.</p>`;
+            }
+        }
+        window.onload = loadGames;
+    </script>
+</body>
+</html>

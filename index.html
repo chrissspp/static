@@ -6,83 +6,66 @@
     <title>Static | Nexus OS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    /* This ensures nothing is 'floating' over your input */
-.hub { 
-    z-index: 10; 
-    position: relative; 
-}
+    <style>
+        :root { 
+            --accent: #a855f7; 
+            --accent-glow: rgba(168, 85, 247, 0.4); 
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
 
-.search-area { 
-    position: relative; 
-    z-index: 9999 !important; /* Forces it to the very front */
-    pointer-events: auto !important; 
-}
+        body { 
+            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
+        }
 
-#main-input {
-    cursor: text !important;
-    caret-color: var(--accent); /* Makes the typing line purple so you see it */
-}
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #1a1635 0%, #020202 100%);
+            z-index: -1 !important; /* Put stars in the BACK */
+            pointer-events: none !important;
+        }
 
-/* This keeps the stars in the back where they belong */
-#stars { 
-    z-index: -1 !important; 
-    pointer-events: none !important; 
-}
+        .sidebar { 
+            width: 80px; background: var(--glass); backdrop-filter: blur(20px); 
+            border-right: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; 
+            z-index: 100; position: relative;
+        }
+        .sidebar i { font-size: 1.5rem; color: #444; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
+
+        .hub { 
+            flex-grow: 1; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            z-index: 10; position: relative; 
+        }
+
+        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -4px; pointer-events: none; }
+        h1 span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+
+        .search-area { 
+            margin-top: 50px; width: 100%; max-width: 650px; 
+            position: relative; z-index: 9999 !important; /* Force to FRONT */
+        }
+
+        .search-area input { 
+            width: 100%; padding: 25px 40px; border-radius: 100px; 
+            border: 2px solid rgba(255, 255, 255, 0.1); 
+            background: rgba(10, 10, 10, 0.9); color: white; 
+            font-size: 1.25rem; outline: none; transition: 0.3s;
+            cursor: text !important; pointer-events: auto !important;
+            caret-color: var(--accent);
+        }
+        .search-area input:focus { border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
+
+        .run-btn { 
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
+            background: var(--accent); border: none; color: white; 
+            padding: 15px 40px; border-radius: 100px; font-weight: 800; cursor: pointer; 
+        }
+    </style>
 </head>
 <body>
     <div id="stars"></div>
-    <div id="loader"><div class="spinner"></div><p style="margin-top:20px; font-weight:800; color:var(--accent); letter-spacing:2px;">KICKSTARTING KERNEL...</p></div>
-
-    <div class="sidebar">
-        <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear"></i>
-    </div>
-
-    <div class="hub">
-        <h1>Static<span>.</span></h1>
-        <div class="search-area">
-            <input type="text" id="main-input" placeholder="Search or Enter URL..." autocomplete="off">
-            <button class="run-btn" onclick="execute()">RUN</button>
-        </div>
-    </div>
-
-    <script>
-        // Force the input to be clickable
-        document.body.addEventListener('click', (e) => {
-            if(e.target.id !== 'main-input') document.getElementById('main-input').focus();
-        });
-
-        // The Hash-Tunnel Logic (No More 404s)
-        function execute() {
-            let val = document.getElementById('main-input').value.trim();
-            if (!val) return;
-
-            document.getElementById('loader').style.display = 'flex';
-
-            if (!val.includes('.') || val.includes(' ')) {
-                val = "https://www.google.com/search?q=" + encodeURIComponent(val);
-            } else if (!val.startsWith('http')) {
-                val = "https://" + val;
-            }
-
-            // Using the hash (#) ensures Cloudflare stays on index.html
-            setTimeout(() => {
-                window.location.href = window.location.origin + "/#" + btoa(val);
-                // Then let the JS handle the internal redirect
-                location.reload(); 
-            }, 500);
-        }
-
-        document.getElementById('main-input').onkeypress = (e) => e.key === 'Enter' && execute();
-
-        // If we load with a hash, try to process it
-        window.addEventListener('load', () => {
-            if (window.location.hash) {
-                const target = atob(window.location.hash.substring(1));
-                window.location.href = "/service/" + btoa(target);
-            }
-        });
-    </script>
-</body>
-</html>
+    ```

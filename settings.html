@@ -19,7 +19,6 @@
             background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
         }
 
-        /* Sidebar for Navigation */
         .sidebar { 
             width: 80px; background: var(--glass); backdrop-filter: blur(20px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
@@ -52,11 +51,9 @@
             transition: 0.3s ease;
         }
 
-        .settings-card:hover { border-color: var(--accent); transform: translateY(-3px); }
         .settings-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: #fff; }
         .settings-card p { margin: 0 0 20px 0; font-size: 0.85rem; color: #888; line-height: 1.5; }
 
-        /* Input & Select Styling */
         .key-form, select {
             width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #333;
             color: white; border-radius: 10px; margin-bottom: 10px; outline: none;
@@ -68,9 +65,7 @@
             padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer;
             transition: 0.2s; margin-top: 5px;
         }
-        .key-button:hover { opacity: 0.9; transform: scale(1.02); }
 
-        /* Switch Styling */
         .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider-round {
@@ -83,8 +78,6 @@
         }
         input:checked + .slider-round { background-color: var(--accent); }
         input:checked + .slider-round:before { transform: translateX(21px); }
-
-        #warning { color: #f43f5e; font-size: 0.75rem; font-weight: 600; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -98,77 +91,103 @@
 
     <div class="content">
         <h1>Settings</h1>
-        <span class="version-tag">System Version: v5.2.6</span>
+        <span class="version-tag">Nexus Kernel: v1.0.4</span>
 
         <div class="settings-grid">
             <div class="settings-card">
-                <h3>About:Blank Cloaking</h3>
-                <p>Toggle startup cloak or open a stealth popup window.</p>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                    <span>Enable on Startup</span>
-                    <label class="switch">
-                        <input type="checkbox" id="ab-settings-switch" onchange="toggleAB()">
-                        <span class="slider-round"></span>
-                    </label>
-                </div>
-                <button onclick="AB()" class="key-button">Open Popup</button>
+                <h3>Stealth Mode</h3>
+                <p>Open the site in an about:blank popup to hide your history.</p>
+                <button onclick="openStealth()" class="key-button">Launch Popup</button>
             </div>
 
             <div class="settings-card">
-                <h3>Set Panic Key</h3>
-                <p>Instantly redirect when a teacher walks by.</p>
-                <input type="text" id="eventKeyInput" placeholder="Panic Keys (Ex: A,B,C)" class="key-form" />
-                <input class="key-form" placeholder="Panic Link (URL)" type="text" id="linkInput" />
-                <button class="key-button" onclick="saveEventKey()">Save Panic Mode</button>
+                <h3>Panic Key</h3>
+                <p>Instantly redirect to a safe site when triggered.</p>
+                <input type="text" id="panic-key" placeholder="Key (Ex: Escape)" class="key-form" />
+                <input type="text" id="panic-url" placeholder="Safe URL (Ex: google.com)" class="key-form" />
+                <button class="key-button" onclick="savePanic()">Save Panic Config</button>
             </div>
 
             <div class="settings-card">
                 <h3>Tab Disguise</h3>
-                <p>Change the title and icon to a school-safe site.</p>
-                <select id="dropdown" onchange="handleDropdownChange(this)">
-                    <option value="Classroom">Default</option>
-                    <option value="Google">Google</option>
-                    <option value="Canvas">Canvas</option>
-                    <option value="Clever">Clever</option>
-                    </select>
-                <button class="key-button" onclick="CustomIcon(); CustomName(); redirectToMainDomain();">Apply Cloak</button>
+                <p>Make this tab look like a school assignment.</p>
+                <select id="cloak-picker">
+                    <option value="none">Default (Nexus)</option>
+                    <option value="google">Google</option>
+                    <option value="canvas">Canvas</option>
+                    <option value="clever">Clever</option>
+                </select>
+                <button class="key-button" onclick="applyCloak()">Apply Disguise</button>
             </div>
 
             <div class="settings-card">
-                <h3>Custom Background</h3>
-                <p>Paste an image URL to set a custom wallpaper.</p>
-                <input class="key-form" type="text" id="background-input" placeholder="Enter image URL" />
-                <button class="key-button" id="save-button">Save Image</button>
-                <button class="key-button" id="reset-button" style="background: #333; margin-top: 5px;">Reset</button>
-            </div>
-
-            <div class="settings-card">
-                <h3>Retro Particles</h3>
-                <p>Enable the background effects from the legacy version.</p>
-                <label class="switch">
-                    <input type="checkbox" id="2" />
-                    <span class="slider-round"></span>
-                </label>
-            </div>
-
-            <div class="settings-card">
-                <h3>Data & Export</h3>
-                <p>Backup your saves so you don't lose progress if blocked.</p>
-                <button class="key-button" onclick="exportSaveData()">Export Save</button>
-                <button class="key-button" onclick="importSaveData()" style="background: #333; margin-top: 5px;">Import Save</button>
-                <p id="warning">Importing will overwrite current saves!</p>
+                <h3>System Data</h3>
+                <p>Export your Nexus configuration and game saves.</p>
+                <button class="key-button" onclick="exportData()">Export Save</button>
+                <button class="key-button" onclick="importData()" style="background: #333; margin-top: 5px;">Import Save</button>
             </div>
         </div>
     </div>
 
-    <script src="/assets/js/m1.js"></script>
-    <script src="/assets/js/s1.js"></script>
-    
     <script>
-        // Any extra Nexus-specific UI logic goes here
+        // --- NEXUS CORE LOGIC ---
+
+        function savePanic() {
+            const key = document.getElementById('panic-key').value;
+            const url = document.getElementById('panic-url').value;
+            localStorage.setItem('nexus-panic-key', key);
+            localStorage.setItem('nexus-panic-url', url);
+            alert('Panic Mode Armed.');
+        }
+
+        function applyCloak() {
+            const type = document.getElementById('cloak-picker').value;
+            localStorage.setItem('nexus-cloak', type);
+            
+            const icon = document.querySelector('link[rel="icon"]') || document.createElement('link');
+            icon.rel = 'icon';
+
+            if (type === 'google') {
+                document.title = 'Google';
+                icon.href = 'https://www.google.com/favicon.ico';
+            } else if (type === 'canvas') {
+                document.title = 'Dashboard';
+                icon.href = 'https://canvas.instructure.com/favicon.ico';
+            } else {
+                document.title = 'Static | Nexus OS';
+            }
+            document.head.appendChild(icon);
+            alert('Cloak Applied.');
+        }
+
+        function openStealth() {
+            var win = window.open();
+            win.document.body.style.margin = '0';
+            win.document.body.style.height = '100vh';
+            var iframe = win.document.createElement('iframe');
+            iframe.style.border = 'none';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.src = window.location.href;
+            win.document.body.appendChild(iframe);
+            window.location.replace('https://google.com');
+        }
+
+        // Apply Panic Key Listener across the site
+        window.addEventListener('keydown', (e) => {
+            const savedKey = localStorage.getItem('nexus-panic-key');
+            const savedUrl = localStorage.getItem('nexus-panic-url');
+            if (e.key === savedKey && savedUrl) {
+                window.location.href = savedUrl.startsWith('http') ? savedUrl : 'https://' + savedUrl;
+            }
+        });
+
         window.onload = () => {
-            // Re-trigger the startup checks from your s1.js
-            console.log("Nexus Settings Core: Initialized");
+            // Load theme colors
+            const saved = JSON.parse(localStorage.getItem('nexus_settings'));
+            if (saved && saved.theme) {
+                document.documentElement.style.setProperty('--accent', saved.theme);
+            }
         };
     </script>
 </body>

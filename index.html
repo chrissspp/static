@@ -92,27 +92,35 @@
     </div>
 
     <script>
-        // Force focus on load
-        window.onload = () => document.getElementById('main-input').focus();
+    // FIX: If the user is on a /service/ path, don't let the browser 404
+    if (window.location.pathname.startsWith('/service/')) {
+        console.log("Nexus Bypass Active");
+        // Keep the page loaded even if Cloudflare thinks it's a 404
+    }
 
-        function execute() {
-            let val = document.getElementById('main-input').value.trim();
-            if (!val) return;
+    window.onload = () => {
+        document.getElementById('main-input').focus();
+    };
 
-            document.getElementById('loader').style.display = 'flex';
+    function execute() {
+        let val = document.getElementById('main-input').value.trim();
+        if (!val) return;
 
-            if (!val.includes('.') || val.includes(' ')) {
-                val = "https://www.google.com/search?q=" + encodeURIComponent(val);
-            } else if (!val.startsWith('http')) {
-                val = "https://" + val;
-            }
+        document.getElementById('loader').style.display = 'flex';
 
-            setTimeout(() => {
-                window.location.href = "/service/" + btoa(val);
-            }, 400);
+        if (!val.includes('.') || val.includes(' ')) {
+            val = "https://www.google.com/search?q=" + encodeURIComponent(val);
+        } else if (!val.startsWith('http')) {
+            val = "https://" + val;
         }
 
-        document.getElementById('main-input').onkeypress = (e) => e.key === 'Enter' && execute();
-    </script>
-</body>
-</html>
+        // The "Jump" - we use a relative path to keep it in the same domain
+        setTimeout(() => {
+            window.location.href = "/service/" + btoa(val);
+        }, 400);
+    }
+
+    document.getElementById('main-input').onkeypress = (e) => {
+        if (e.key === 'Enter') execute();
+    };
+</script>

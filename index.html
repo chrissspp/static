@@ -10,74 +10,73 @@
         :root { 
             --accent: #a855f7; 
             --accent-glow: rgba(168, 85, 247, 0.4); 
-            --bg-deep: #020202;
-            --glass: rgba(255, 255, 255, 0.06);
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.05);
         }
 
         body { 
             margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-deep);
-            color: white; height: 100vh; display: flex; overflow: hidden; 
+            background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
         }
 
-        /* Feature: Background Layer (Z-INDEX: 1) */
-        #dust {
+        #stars {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020202 100%);
-            z-index: 1; pointer-events: none; /* This prevents the BG from blocking clicks */
+            background: radial-gradient(circle at 50% 50%, #1a1635 0%, #020202 100%);
+            z-index: 1; pointer-events: none;
         }
 
-        /* Sidebar (Z-INDEX: 100) */
+        /* Sidebar */
         .sidebar { 
-            width: 80px; background: var(--glass); backdrop-filter: blur(25px); 
+            width: 80px; background: var(--glass); backdrop-filter: blur(20px); 
             border-right: 1px solid rgba(255, 255, 255, 0.1); 
             display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; 
             z-index: 100; position: relative;
         }
+        .sidebar i { font-size: 1.5rem; color: #444; cursor: pointer; transition: 0.3s; }
+        .sidebar i:hover, .sidebar i.active { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
 
-        /* Main Hub (Z-INDEX: 50) */
-        .hub { 
-            flex-grow: 1; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; text-align: center; 
-            position: relative; z-index: 50;
-        }
-        
-        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -5px; pointer-events: none; }
-        h1 span { color: var(--accent); text-shadow: 0 0 40px var(--accent-glow); }
-        
-        /* The Search Container (Z-INDEX: 999) */
+        /* Main Hub */
+        .hub { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 50; }
+        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -4px; pointer-events: none; }
+        h1 span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+
+        /* Input Fix: High Z-Index and Pointer-Events Auto */
         .search-area { 
             margin-top: 50px; width: 100%; max-width: 650px; 
             position: relative; z-index: 999; 
         }
-
         .search-area input { 
             width: 100%; padding: 25px 40px; border-radius: 100px; 
             border: 2px solid rgba(255, 255, 255, 0.1); 
-            background: rgba(10, 10, 10, 0.8); color: white; 
-            font-size: 1.25rem; outline: none; 
-            transition: 0.3s;
-            cursor: text !important;
-            pointer-events: auto !important; /* Forces the mouse to interact */
+            background: rgba(10, 10, 10, 0.9); color: white; 
+            font-size: 1.25rem; outline: none; transition: 0.3s;
+            cursor: text !important; pointer-events: auto !important;
         }
+        .search-area input:focus { border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
 
-        .search-area input:focus { 
-            border-color: var(--accent); 
-            box-shadow: 0 0 40px var(--accent-glow);
-            background: rgba(20, 20, 20, 0.9);
-        }
-
-        .launch-btn { 
+        .run-btn { 
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%); 
             background: var(--accent); border: none; color: white; 
-            padding: 15px 40px; border-radius: 100px; font-weight: 800; 
-            cursor: pointer; z-index: 1000;
+            padding: 15px 40px; border-radius: 100px; font-weight: 800; cursor: pointer; 
         }
+
+        /* Loading Screen */
+        #loader {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .spinner {
+            width: 60px; height: 60px; border: 4px solid var(--glass);
+            border-top: 4px solid var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <div id="dust"></div>
-    
+    <div id="stars"></div>
+    <div id="loader"><div class="spinner"></div><p style="margin-top:20px; font-weight:800; color:var(--accent); letter-spacing:2px;">ESTABLISHING TUNNEL...</p></div>
+
     <div class="sidebar">
         <i class="fa-solid fa-house active" onclick="location.href='index.html'"></i>
         <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
@@ -87,20 +86,20 @@
     <div class="hub">
         <h1>Static<span>.</span></h1>
         <div class="search-area">
-            <input type="text" id="main-input" placeholder="Type here..." autocomplete="off">
-            <button class="launch-btn" onclick="execute()">RUN</button>
+            <input type="text" id="main-input" placeholder="Search or Enter URL..." autocomplete="off">
+            <button class="run-btn" onclick="execute()">RUN</button>
         </div>
     </div>
 
     <script>
-        // Force focus on click anywhere in the search area
-        document.querySelector('.search-area').onclick = () => {
-            document.getElementById('main-input').focus();
-        };
+        // Force focus on load
+        window.onload = () => document.getElementById('main-input').focus();
 
         function execute() {
             let val = document.getElementById('main-input').value.trim();
             if (!val) return;
+
+            document.getElementById('loader').style.display = 'flex';
 
             if (!val.includes('.') || val.includes(' ')) {
                 val = "https://www.google.com/search?q=" + encodeURIComponent(val);
@@ -108,12 +107,12 @@
                 val = "https://" + val;
             }
 
-            window.location.href = "/service/" + btoa(val);
+            setTimeout(() => {
+                window.location.href = "/service/" + btoa(val);
+            }, 400);
         }
 
-        document.getElementById('main-input').onkeypress = (e) => {
-            if (e.key === 'Enter') execute();
-        };
+        document.getElementById('main-input').onkeypress = (e) => e.key === 'Enter' && execute();
     </script>
 </body>
 </html>

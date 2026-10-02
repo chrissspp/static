@@ -1,109 +1,950 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Static | Nexus OS</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --accent: #a855f7; 
-            --accent-glow: rgba(168, 85, 247, 0.4); 
-            --bg: #020202;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>STATIC-9A3 // UNDERGROUND CYBER PORTAL</title>
 
-        body { 
-            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); color: white; height: 100vh; display: flex; overflow: hidden; 
-        }
+  <!-- External CDNs: FontAwesome, Google Fonts, Three.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@700;900&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-        #stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, #1a1635 0%, #020202 100%);
-            z-index: -1 !important;
-            pointer-events: none !important;
-        }
+  <style>
+    :root {
+      --bg: #020208;
+      --card-bg: rgba(8, 10, 20, 0.88);
+      --card-border: rgba(0, 240, 255, 0.25);
+      --text-main: #ffffff;
+      --text-dim: #94a3b8;
+      --cyan: #00f0ff;
+      --pink: #ff0055;
+      --gold: #ffaa00;
+      --neon-green: #00ff66;
+      --purple: #9d00ff;
+      --rainbow-grad: linear-gradient(90deg, #ff0055, #ffaa00, #00ff66, #00f0ff, #9d00ff, #ff0055);
+    }
 
-        .sidebar { 
-            width: 80px; background: var(--glass); backdrop-filter: blur(20px); 
-            border-right: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; flex-direction: column; align-items: center; padding: 35px 0; gap: 40px; 
-            z-index: 100;
-        }
-        .sidebar i { font-size: 1.5rem; color: #444; cursor: pointer; transition: 0.3s; }
-        .sidebar i:hover { color: var(--accent); filter: drop-shadow(0 0 10px var(--accent)); }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Rajdhani', sans-serif;
+    }
 
-        .hub { 
-            flex-grow: 1; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; 
-            z-index: 10; position: relative; 
-        }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      color: var(--text-main);
+    }
 
-        h1 { font-size: 6rem; font-weight: 800; margin: 0; letter-spacing: -4px; }
-        h1 span { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+    /* Ambient Flowing Rainbow Background Layer */
+    .rainbow-bg-layer {
+      position: fixed;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg at 50% 50%, #ff0055, #ffaa00, #00ff66, #00f0ff, #9d00ff, #ff0055);
+      filter: blur(100px);
+      opacity: 0.35;
+      animation: spinRainbow 10s linear infinite;
+      z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
 
-        .search-area { 
-            margin-top: 50px; width: 100%; max-width: 650px; 
-            position: relative; z-index: 999;
-        }
+    @keyframes spinRainbow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-        .search-area input { 
-            width: 100%; padding: 25px 40px; border-radius: 100px; 
-            border: 2px solid rgba(255, 255, 255, 0.1); 
-            background: rgba(10, 10, 10, 0.9); color: white; 
-            font-size: 1.25rem; outline: none; transition: 0.3s;
-            box-sizing: border-box;
-        }
-        .search-area input:focus { border-color: var(--accent); box-shadow: 0 0 40px var(--accent-glow); }
+    /* Flowing Neon Rainbow Screen Corner Brackets */
+    .rainbow-corner {
+      position: fixed;
+      width: 100px;
+      height: 100px;
+      z-index: 25;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
 
-        .run-btn { 
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
-            background: var(--accent); border: none; color: white; 
-            padding: 12px 30px; border-radius: 100px; font-weight: 800; cursor: pointer; 
-        }
-    </style>
+    .corner-tl {
+      top: 0; left: 0;
+      border-top: 4px solid transparent;
+      border-left: 4px solid transparent;
+      border-image: var(--rainbow-grad) 1;
+      box-shadow: -8px -8px 20px rgba(0, 240, 255, 0.5);
+    }
+
+    .corner-tr {
+      top: 0; right: 0;
+      border-top: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-image: var(--rainbow-grad) 1;
+      box-shadow: 8px -8px 20px rgba(255, 0, 85, 0.5);
+    }
+
+    .corner-bl {
+      bottom: 0; left: 0;
+      border-bottom: 4px solid transparent;
+      border-left: 4px solid transparent;
+      border-image: var(--rainbow-grad) 1;
+      box-shadow: -8px 8px 20px rgba(0, 255, 102, 0.5);
+    }
+
+    .corner-br {
+      bottom: 0; right: 0;
+      border-bottom: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-image: var(--rainbow-grad) 1;
+      box-shadow: 8px 8px 20px rgba(255, 170, 0, 0.5);
+    }
+
+    /* Glowing Rainbow Border Container */
+    .rainbow-card {
+      position: relative;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 18px;
+      padding: 2px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .rainbow-card::before {
+      content: '';
+      position: absolute;
+      inset: -100%;
+      background: conic-gradient(from 0deg, #ff0055, #ffaa00, #00ff66, #00f0ff, #9d00ff, #ff0055);
+      animation: spinRainbow 5s linear infinite;
+      z-index: 0;
+      opacity: 0.9;
+      transition: opacity 0.4s ease;
+    }
+
+    .rainbow-card-inner {
+      position: relative;
+      background: rgba(6, 8, 18, 0.94);
+      border-radius: 16px;
+      padding: 20px;
+      z-index: 1;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Disable Rainbow Override */
+    body.no-rainbow .rainbow-bg-layer,
+    body.no-rainbow .rainbow-corner,
+    body.no-rainbow .rainbow-card::before {
+      opacity: 0 !important;
+    }
+
+    body.no-rainbow .rainbow-card {
+      border: 1px solid var(--card-border);
+    }
+
+    /* Glitch Typography */
+    .glitch-text {
+      position: relative;
+      display: inline-block;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      background: var(--rainbow-grad);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: spinRainbow 3s linear infinite;
+    }
+
+    body.glitch-active .glitch-text::before,
+    body.glitch-active .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: transparent;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    body.glitch-active .glitch-text::before {
+      left: -2px;
+      text-shadow: 2px 0 var(--pink);
+      animation: glitchAnim 2s infinite linear alternate-reverse;
+    }
+
+    body.glitch-active .glitch-text::after {
+      left: 2px;
+      text-shadow: -2px 0 var(--cyan);
+      animation: glitchAnim2 2s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitchAnim {
+      0% { clip: rect(10px, 9999px, 30px, 0); }
+      50% { clip: rect(40px, 9999px, 60px, 0); }
+      100% { clip: rect(20px, 9999px, 50px, 0); }
+    }
+
+    @keyframes glitchAnim2 {
+      0% { clip: rect(50px, 9999px, 20px, 0); }
+      50% { clip: rect(10px, 9999px, 70px, 0); }
+      100% { clip: rect(30px, 9999px, 40px, 0); }
+    }
+
+    /* 3D WebGL Canvas */
+    #webgl-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      display: block;
+      touch-action: none;
+    }
+
+    /* Speedlines & Screen Vibration */
+    .speed-lines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 0.3s;
+      background: radial-gradient(circle, transparent 20%, rgba(0, 240, 255, 0.4) 70%, rgba(255, 0, 85, 0.6) 100%),
+                  repeating-conic-gradient(from 0deg, transparent 0deg 6deg, rgba(255,255,255,0.15) 6deg 12deg);
+    }
+
+    .speed-lines.active {
+      opacity: 1;
+      animation: speedPulse 0.06s infinite alternate;
+    }
+
+    @keyframes speedPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    .shake {
+      animation: heavyShake 0.05s infinite alternate;
+    }
+
+    @keyframes heavyShake {
+      0% { transform: translate(-4px, 3px) rotate(-1deg); }
+      100% { transform: translate(4px, -3px) rotate(1deg); }
+    }
+
+    #warp-flash {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+      transition: opacity 0.2s ease-out;
+    }
+
+    /* Cockpit HUD Overlay */
+    #startup-hud {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: env(safe-area-inset-top, 16px) env(safe-area-inset-right, 16px) env(safe-area-inset-bottom, 16px) env(safe-area-inset-left, 16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .hud-hidden {
+      opacity: 0 !important;
+      transform: scale(1.08) !important;
+      pointer-events: none !important;
+    }
+
+    .hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid var(--card-border);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Cockpit Controls Box */
+    .cockpit-box {
+      width: 100%;
+      max-width: 420px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .switches-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .switch-card {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--card-border);
+      padding: 12px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .switch-card.active {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.15);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .switch-pill {
+      width: 40px;
+      height: 22px;
+      background: #222;
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .switch-card.active .switch-pill {
+      background: var(--cyan);
+    }
+
+    .switch-knob {
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .switch-card.active .switch-knob {
+      transform: translateX(18px);
+    }
+
+    .throttle-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .custom-range {
+      width: 100%;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 7px;
+      outline: none;
+      border: 1px solid var(--card-border);
+      accent-color: var(--pink);
+    }
+
+    .launch-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      font-family: 'Orbitron', sans-serif;
+      color: #555;
+      background: #1a202c;
+      border: none;
+      border-radius: 14px;
+      cursor: not-allowed;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .launch-btn.ready {
+      background: linear-gradient(90deg, var(--pink), var(--gold), var(--cyan));
+      background-size: 200% 200%;
+      animation: spinRainbow 2s linear infinite;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(3, 7, 18, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(0,0,0,0.4);
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 8px;
+    }
+
+    /* Dashboard UI */
+    #dashboard {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+      overflow-y: auto;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    #dashboard.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .action-btn {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: none;
+      background: var(--pink);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Audio Equalizer visualizer */
+    .eq-bar-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 20px;
+    }
+
+    .eq-bar {
+      width: 4px;
+      background: var(--cyan);
+      border-radius: 2px;
+      animation: eqBounce 0.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes eqBounce {
+      0% { height: 15%; }
+      100% { height: 100%; }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--cyan);
+      color: #000;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 10px 22px;
+      border-radius: 20px;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
 </head>
-<body>
-    <div id="stars"></div>
+<body class="glitch-active">
 
-    <div class="sidebar">
-        <i class="fa-solid fa-house" onclick="location.href='index.html'"></i>
-        <i class="fa-solid fa-gauge" onclick="location.href='dashboard.html'"></i>
-        <i class="fa-solid fa-gamepad" onclick="location.href='games.html'"></i>
-        <i class="fa-solid fa-gear" onclick="location.href='settings.html'"></i>
-    </div>
+  <!-- Ambient Flowing Rainbow Layer -->
+  <div class="rainbow-bg-layer" id="rainbow-bg"></div>
 
-    <div class="hub">
-        <h1>Static<span>.</span></h1>
-        
-        <div class="search-area">
-            <input type="text" id="main-input" placeholder="Search or enter URL..." autofocus>
-            <button class="run-btn" onclick="execute()">RUN</button>
+  <!-- Flowing Corner Accents -->
+  <div class="rainbow-corner corner-tl"></div>
+  <div class="rainbow-corner corner-tr"></div>
+  <div class="rainbow-corner corner-bl"></div>
+  <div class="rainbow-corner corner-br"></div>
+
+  <!-- 3D WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Speed Lines & Visual FX Overlays -->
+  <div class="speed-lines" id="speed-lines"></div>
+  <div id="warp-flash"></div>
+
+  <!-- STARTUP HUD COCKPIT -->
+  <div id="startup-hud">
+    <div class="hud-header">
+      <div class="rainbow-card" style="flex:1; margin-right: 12px;">
+        <div class="rainbow-card-inner" style="padding: 10px 16px; display:flex; justify-content:space-between; align-items:center;">
+          <span class="glitch-text" data-text="STATIC-9A3" style="font-size: 16px;">STATIC-9A3</span>
+          <span style="font-size: 11px; color: var(--neon-green); font-family: 'Fira Code', monospace; font-weight:700;"><i class="fa-solid fa-shield-halved"></i> VIP ACCESS</span>
         </div>
+      </div>
+      <button class="icon-btn" onclick="openModal('settings-modal')"><i class="fa-solid fa-gear"></i></button>
     </div>
 
-    <script>
-        function execute() {
-            let val = document.getElementById('main-input').value.trim();
-            if (!val) return;
-            
-            // Logic for URL or Search
-            if (!val.includes('.') || val.includes(' ')) {
-                val = "https://www.google.com/search?q=" + encodeURIComponent(val);
-            } else if (!val.startsWith('http')) {
-                val = "https://" + val;
-            }
+    <!-- Center Cockpit Control Box -->
+    <div class="cockpit-box">
+      <div class="rainbow-card">
+        <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:14px; text-align:center;">
+          <div>
+            <h1 class="glitch-text" data-text="HYPER-WARP DRIVE" style="font-size: 22px; margin-bottom: 2px;">HYPER-WARP DRIVE</h1>
+            <p style="font-size: 12px; color: var(--text-dim);">Arm quantum core & slide throttle to engage warp</p>
+          </div>
 
-            // Sends to UV proxy
-            location.href = "/service/" + btoa(val);
+          <div class="switches-grid">
+            <div class="switch-card" id="sw-core" onclick="toggleCockpitSwitch('core')">
+              <span style="font-size: 11px; font-weight:700; color:var(--text-dim);">1. POWER CORE</span>
+              <div class="switch-pill"><div class="switch-knob"></div></div>
+            </div>
+            <div class="switch-card" id="sw-thruster" onclick="toggleCockpitSwitch('thruster')">
+              <span style="font-size: 11px; font-weight:700; color:var(--text-dim);">2. THRUSTERS</span>
+              <div class="switch-pill"><div class="switch-knob"></div></div>
+            </div>
+          </div>
+
+          <div class="throttle-box">
+            <div style="display:flex; justify-content:space-between; font-size: 11px; font-weight:700;">
+              <span style="color:var(--text-dim);">WARP THRUST OUTPUT</span>
+              <span style="color:var(--gold);" id="throttle-txt">0%</span>
+            </div>
+            <input type="range" class="custom-range" id="throttle-range" min="0" max="100" value="0" oninput="updateCockpitThrottle(this.value)">
+          </div>
+
+          <button class="launch-btn" id="launch-btn" onclick="triggerWarpSequence()">ARM COCKPIT</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:11px; color:var(--text-dim); font-family:'Fira Code', monospace;">
+      static-9a3.pages.dev &bull; Quantum Edge Mesh Active
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD PORTAL -->
+  <div id="dashboard">
+    <div class="rainbow-card" style="max-width: 1100px; margin: 0 auto; width:100%;">
+      <div class="rainbow-card-inner" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 class="glitch-text" data-text="STATIC-9A3 PORTAL" style="font-size:20px;">STATIC-9A3 PORTAL</h2>
+          <p style="font-size:12px; color:var(--text-dim);">Cloudflare Edge Verified &bull; Latency: <span id="ping-txt" style="color:var(--neon-green);">11ms</span></p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="icon-btn" onclick="openModal('exporter-modal')"><i class="fa-solid fa-code"></i></button>
+          <button class="icon-btn" onclick="openModal('settings-modal')"><i class="fa-solid fa-sliders"></i></button>
+          <button class="action-btn" style="background: rgba(255,255,255,0.1);" onclick="reLaunchWarp()"><i class="fa-solid fa-rotate-right"></i> Warp</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="rainbow-card">
+        <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:12px;">
+          <h3 style="color:var(--cyan); font-family:'Orbitron', sans-serif;"><i class="fa-solid fa-gamepad"></i> Retro Game Arcade</h3>
+          <p style="font-size:13px; color:var(--text-dim);">Direct HTML5 game mirrors and unblocked arcade tools embedded right into your page.</p>
+          <button class="action-btn" onclick="showToast('Loading HTML5 Arcade Mirror...')">Launch Arcade</button>
+        </div>
+      </div>
+
+      <div class="rainbow-card">
+        <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:12px;">
+          <h3 style="color:var(--pink); font-family:'Orbitron', sans-serif;"><i class="fa-solid fa-shield-cat"></i> Cyber Proxy Tunnel</h3>
+          <p style="font-size:13px; color:var(--text-dim);">Encrypted web proxy tunnel frame routed through low-latency edge nodes.</p>
+          <button class="action-btn" style="background:var(--cyan); color:#000;" onclick="showToast('Connecting Encrypted Tunnel...')">Open Proxy</button>
+        </div>
+      </div>
+
+      <div class="rainbow-card">
+        <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:12px;">
+          <h3 style="color:var(--gold); font-family:'Orbitron', sans-serif;"><i class="fa-solid fa-wave-square"></i> Audio FX Equalizer</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <p style="font-size:13px; color:var(--text-dim);">Synthesized Web Audio Engine</p>
+            <div class="eq-bar-container">
+              <div class="eq-bar" style="animation-delay: 0.1s;"></div>
+              <div class="eq-bar" style="animation-delay: 0.3s;"></div>
+              <div class="eq-bar" style="animation-delay: 0.2s;"></div>
+              <div class="eq-bar" style="animation-delay: 0.4s;"></div>
+            </div>
+          </div>
+          <button class="action-btn" style="background:var(--gold); color:#000;" onclick="playSynthSFX(880, 0.4, 'sawtooth'); showToast('Audio Test Impulse Sent!');">Test Synthesizer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="rainbow-card" style="width:100%; max-width:420px;">
+      <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+          <span class="glitch-text" data-text="SETTINGS" style="font-size:16px;"><i class="fa-solid fa-sliders"></i> SETTINGS</span>
+          <button class="icon-btn" style="width:32px; height:32px;" onclick="closeModal('settings-modal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div>
+          <div class="setting-item">
+            <div>
+              <p style="font-size:13px; font-weight:700;">Flowing Rainbow FX</p>
+              <p style="font-size:11px; color:var(--text-dim);">Background & Corner Glows</p>
+            </div>
+            <input type="checkbox" id="set-rainbow" checked onchange="toggleSetting('rainbow', this.checked)">
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <p style="font-size:13px; font-weight:700;">Cyber Glitch Text</p>
+              <p style="font-size:11px; color:var(--text-dim);">RGB Text Animations</p>
+            </div>
+            <input type="checkbox" id="set-glitch" checked onchange="toggleSetting('glitch', this.checked)">
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <p style="font-size:13px; font-weight:700;">3D Tube Motion</p>
+              <p style="font-size:11px; color:var(--text-dim);">Three.js Tunnel Rendering</p>
+            </div>
+            <input type="checkbox" id="set-motion" checked onchange="toggleSetting('motion', this.checked)">
+          </div>
+
+          <div class="setting-item">
+            <div>
+              <p style="font-size:13px; font-weight:700;">Synthesized Audio SFX</p>
+              <p style="font-size:11px; color:var(--text-dim);">Engine Rumble & Beeps</p>
+            </div>
+            <input type="checkbox" id="set-audio" checked onchange="toggleSetting('audio', this.checked)">
+          </div>
+        </div>
+
+        <button class="action-btn" style="width:100%; justify-content:center;" onclick="closeModal('settings-modal')">Save & Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORTER MODAL -->
+  <div class="modal-overlay" id="exporter-modal">
+    <div class="rainbow-card" style="width:100%; max-width:500px;">
+      <div class="rainbow-card-inner" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+          <span class="glitch-text" data-text="CODE EXPORTER" style="font-size:16px;"><i class="fa-solid fa-code"></i> SOURCE EXPORTER</span>
+          <button class="icon-btn" style="width:32px; height:32px;" onclick="closeModal('exporter-modal')"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p style="font-size:12px; color:var(--text-dim);">Copy full HTML source ready for single-file deployment to Cloudflare Pages:</p>
+        <button class="action-btn" style="background:var(--neon-green); color:#000; justify-content:center;" onclick="copyFullSource()"><i class="fa-solid fa-copy"></i> 1-Tap Copy Full Code</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Message</div>
+
+  <script>
+    const settings = {
+      rainbow: true,
+      glitch: true,
+      motion: true,
+      audio: true
+    };
+
+    const cockpit = {
+      core: false,
+      thruster: false,
+      throttle: 0,
+      ready: false,
+      warping: false
+    };
+
+    let audioCtx = null;
+
+    function playSynthSFX(freq, duration, type = 'sine') {
+      if (!settings.audio) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function toggleSetting(key, enabled) {
+      settings[key] = enabled;
+      if (key === 'rainbow') {
+        document.body.classList.toggle('no-rainbow', !enabled);
+      } else if (key === 'glitch') {
+        document.body.classList.toggle('glitch-active', enabled);
+      }
+      showToast(`${key.toUpperCase()} preset updated`);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function toggleCockpitSwitch(key) {
+      cockpit[key] = !cockpit[key];
+      const el = document.getElementById(`sw-${key}`);
+      if (cockpit[key]) {
+        el.classList.add('active');
+        playSynthSFX(620, 0.1, 'square');
+      } else {
+        el.classList.remove('active');
+        playSynthSFX(310, 0.1, 'square');
+      }
+      checkCockpitStatus();
+    }
+
+    function updateCockpitThrottle(val) {
+      cockpit.throttle = parseInt(val);
+      document.getElementById('throttle-txt').innerText = `${val}%`;
+      checkCockpitStatus();
+    }
+
+    function checkCockpitStatus() {
+      const btn = document.getElementById('launch-btn');
+      if (cockpit.core && cockpit.thruster && cockpit.throttle >= 80) {
+        cockpit.ready = true;
+        btn.classList.add('ready');
+        btn.innerText = 'BLAST OFF!';
+      } else {
+        cockpit.ready = false;
+        btn.classList.remove('ready');
+        btn.innerText = 'ARM COCKPIT';
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyFullSource() {
+      const src = document.documentElement.outerHTML;
+      const area = document.createElement('textarea');
+      area.value = src;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      document.body.removeChild(area);
+      showToast('Full HTML copied to clipboard!');
+    }
+
+    // Three.js Tube Rendering
+    let scene, camera, renderer, tunnelMesh, starParticles;
+    let tunnelSpeed = 0.005;
+
+    function init3D() {
+      const canvas = document.getElementById('webgl-canvas');
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x020208, 0.03);
+
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 5;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Spline Path
+      const points = [];
+      for (let i = 0; i < 60; i++) {
+        points.push(new THREE.Vector3(
+          Math.sin(i * 0.15) * 3,
+          Math.cos(i * 0.1) * 3,
+          -i * 8
+        ));
+      }
+      const path = new THREE.CatmullRomCurve3(points);
+
+      // Rainbow Canvas Texture
+      const texCanvas = document.createElement('canvas');
+      texCanvas.width = 512;
+      texCanvas.height = 512;
+      const ctx = texCanvas.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 512, 0);
+      grad.addColorStop(0, '#ff0055');
+      grad.addColorStop(0.2, '#ffaa00');
+      grad.addColorStop(0.4, '#00ff66');
+      grad.addColorStop(0.6, '#00f0ff');
+      grad.addColorStop(0.8, '#9d00ff');
+      grad.addColorStop(1, '#ff0055');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Grid Wire Overlay
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 512; i += 32) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
+      }
+
+      const texture = new THREE.CanvasTexture(texCanvas);
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(4, 30);
+
+      const geometry = new THREE.TubeGeometry(path, 100, 3, 16, false);
+      const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+
+      tunnelMesh = new THREE.Mesh(geometry, material);
+      scene.add(tunnelMesh);
+
+      // Star Particles
+      const starGeo = new THREE.BufferGeometry();
+      const count = 400;
+      const posArray = new Float32Array(count * 3);
+      for (let i = 0; i < count * 3; i++) posArray[i] = (Math.random() - 0.5) * 40;
+      starGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      starParticles = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.15, color: 0x00f0ff, transparent: true }));
+      scene.add(starParticles);
+
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (settings.motion && tunnelMesh) tunnelMesh.material.map.offset.y -= tunnelSpeed;
+      if (settings.motion && starParticles) starParticles.rotation.z += 0.001;
+
+      renderer.render(scene, camera);
+    }
+
+    function triggerWarpSequence() {
+      if (!cockpit.ready && cockpit.throttle < 80) {
+        showToast('Arm Switches & Push Throttle to 80%+');
+        return;
+      }
+
+      cockpit.warping = true;
+      document.getElementById('startup-hud').classList.add('hud-hidden');
+      document.getElementById('speed-lines').classList.add('active');
+      document.body.classList.add('shake');
+
+      playSynthSFX(120, 2.0, 'sawtooth');
+
+      let duration = 0;
+      const warpInterval = setInterval(() => {
+        tunnelSpeed += 0.005;
+        camera.fov += 0.8;
+        camera.updateProjectionMatrix();
+        duration += 50;
+
+        if (duration > 2000) {
+          clearInterval(warpInterval);
+          const flash = document.getElementById('warp-flash');
+          flash.style.opacity = '1';
+
+          setTimeout(() => {
+            document.body.classList.remove('shake');
+            document.getElementById('speed-lines').classList.remove('active');
+            document.getElementById('dashboard').classList.add('visible');
+            flash.style.opacity = '0';
+            playSynthSFX(880, 0.3, 'sine');
+          }, 300);
         }
+      }, 50);
+    }
 
-        // Allow Enter key to work
-        document.getElementById('main-input').onkeypress = (e) => {
-            if (e.key === 'Enter') execute();
-        };
-    </script>
+    function reLaunchWarp() {
+      document.getElementById('dashboard').classList.remove('visible');
+      document.getElementById('startup-hud').classList.remove('hud-hidden');
+      tunnelSpeed = 0.005;
+      camera.fov = 75;
+      camera.updateProjectionMatrix();
+      cockpit.warping = false;
+    }
+
+    window.addEventListener('resize', () => {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(init3D, 100);
+    } else {
+      document.addEventListener('DOMContentLoaded', init3D);
+    }
+  </script>
 </body>
 </html>

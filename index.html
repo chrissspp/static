@@ -476,26 +476,6 @@
       font-weight: 800;
       cursor: pointer;
     }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--secondary);
-      color: #000;
-      font-weight: 800;
-      font-size: 12px;
-      padding: 10px 20px;
-      border-radius: 20px;
-      z-index: 1000;
-      transition: transform 0.3s ease;
-      pointer-events: none;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
@@ -561,7 +541,7 @@
     </div>
 
     <div class="search-bar">
-      <input type="text" class="search-input" id="search-input" placeholder="Search games (e.g. Basket, Drift, Roulette)..." onkeyup="filterGames()">
+      <input type="text" class="search-input" id="search-input" placeholder="Search games (e.g. Basket, Drift, Roulette, 2048)..." onkeyup="filterGames()">
     </div>
 
     <div class="games-grid" id="games-grid"></div>
@@ -576,22 +556,26 @@
     <iframe id="modal-iframe" class="modal-iframe" src=""></iframe>
   </div>
 
-  <div class="toast" id="toast">Message</div>
-
   <script>
+    // Exact file paths matching your GitHub repository structure (/games/...)
     const games = [
-      { name: "Basket Bros", file: "Basket Bros.html", tag: "Sports" },
-      { name: "Basket Battle", file: "Basket Battle.html", tag: "Sports" },
-      { name: "Basketball Stars", file: "Basketball Stars.html", tag: "Sports" },
-      { name: "Buckshot Roulette", file: "Buckshot Roulette.html", tag: "Action" },
-      { name: "Bowmasters", file: "Bowmasters.html", tag: "Action" },
-      { name: "Drift Hunters", file: "Drift Hunters.html", tag: "Racing" },
-      { name: "Bridge Race", file: "Bridge Race.html", tag: "Arcade" },
-      { name: "Bad Parenting 1", file: "Bad Parenting 1.html", tag: "Horror" },
-      { name: "Five Nights at Epstein's", file: "Five Nights at Epstein's.html", tag: "Horror" },
-      { name: "Schoolboy Runaway", file: "Schoolboy Runaway.html", tag: "Action" },
-      { name: "Chat Bot AI (A.I GPT)", file: "Chat Bot AI (A.I GPT).html", tag: "Tools" },
-      { name: "Soundboard", file: "Soundboard.html", tag: "Tools" }
+      { name: "Basket Bros", path: "games/Basket Bros.html", tag: "Sports" },
+      { name: "Basket Battle", path: "games/Basket Battle.html", tag: "Sports" },
+      { name: "Basketball Stars", path: "games/Basketball Stars.html", tag: "Sports" },
+      { name: "Buckshot Roulette", path: "games/Buckshot Roulette.html", tag: "Action" },
+      { name: "Bowmasters", path: "games/Bowmasters.html", tag: "Action" },
+      { name: "Drift Hunters", path: "games/Drift Hunters.html", tag: "Racing" },
+      { name: "Bridge Race", path: "games/Bridge Race.html", tag: "Arcade" },
+      { name: "Bad Parenting 1", path: "games/Bad Parenting 1.html", tag: "Horror" },
+      { name: "Five Nights at Epstein's", path: "games/Five Nights at Epstein's.html", tag: "Horror" },
+      { name: "Schoolboy Runaway", path: "games/Schoolboy Runaway.html", tag: "Action" },
+      { name: "Chat Bot AI (A.I GPT)", path: "games/Chat Bot AI (A.I GPT).html", tag: "Tools" },
+      { name: "Soundboard", path: "games/Soundboard.html", tag: "Tools" },
+      { name: "1v1.LOL (Asset Zip)", path: "games/EclipsarGames Assets main 1v1lol.zip", tag: "Archive" },
+      { name: "1v1.Space (Asset Zip)", path: "games/EclipsarGames Assets main 1v1space.zip", tag: "Archive" },
+      { name: "2048 (Asset Zip)", path: "games/EclipsarGames Assets main 2048.zip", tag: "Archive" },
+      { name: "2048 Multitask (Asset Zip)", path: "games/EclipsarGames Assets main 2048-multitask.zip", tag: "Archive" },
+      { name: "100NG (Asset Zip)", path: "games/EclipsarGames Assets main 100ng.zip", tag: "Archive" }
     ];
 
     const state = { core: false, thruster: false, throttle: 0, ready: false };
@@ -607,7 +591,7 @@
             <div class="game-tag">${g.tag}</div>
             <div class="game-title">${g.name}</div>
           </div>
-          <button class="play-btn" onclick="playGame('${g.file}', '${g.name}')">PLAY NOW</button>
+          <button class="play-btn" onclick="playGame('${g.path}', '${g.name}')">PLAY NOW</button>
         `;
         grid.appendChild(card);
       });
@@ -619,9 +603,9 @@
       renderGames(filtered);
     }
 
-    function playGame(file, title) {
+    function playGame(path, title) {
       document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-iframe').src = file;
+      document.getElementById('modal-iframe').src = path;
       document.getElementById('player-modal').classList.add('active');
     }
 
@@ -656,7 +640,7 @@
       }
     }
 
-    // 3D Tube Engine
+    // 3D Warp Engine
     let scene, camera, renderer, tunnelMesh;
     let speed = 0.005;
 
